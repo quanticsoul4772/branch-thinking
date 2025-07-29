@@ -1,0 +1,33 @@
+{
+  "name": "High Exploration",
+  "description": "Configuration optimized for creative exploration and brainstorming",
+  "evaluation": {
+    "thresholds": {
+      "similarity": 0.8,
+      "redundancy": 0.8,
+      "contradiction": 0.4,
+      "lowCoherence": 0.3,
+      "highContradiction": 0.7,
+      "lowInformationGain": 0.2,
+      "lowGoalAlignment": 0.2
+    },
+    "weights": {
+      "coherence": 0.15,
+      "contradiction": 0.15,
+      "informationGain": 0.3,
+      "goalAlignment": 0.1,
+      "confidenceGradient": 0.15,
+      "redundancy": 0.15
+    }
+  },
+  "branch": {
+    "pruneThreshold": 0.2,
+    "deadEndThreshold": 0.2,
+    "completionThreshold": 0.85,
+    "completionGoalAlignment": 0.85
+  },
+  "autoEvaluation": {
+    "enabled": true,
+    "threshold": 0.25
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Problem Solving",
+  "description": "Balanced configuration for general problem-solving tasks",
+  "evaluation": {
+    "thresholds": {
+      "similarity": 0.7,
+      "redundancy": 0.7,
+      "contradiction": 0.6,
+      "lowCoherence": 0.5,
+      "highContradiction": 0.5,
+      "lowInformationGain": 0.3,
+      "lowGoalAlignment": 0.3
+    },
+    "weights": {
+      "coherence": 0.2,
+      "contradiction": 0.25,
+      "informationGain": 0.2,
+      "goalAlignment": 0.15,
+      "confidenceGradient": 0.1,
+      "redundancy": 0.1
+    }
+  },
+  "branch": {
+    "pruneThreshold": 0.3,
+    "deadEndThreshold": 0.3,
+    "completionThreshold": 0.8,
+    "completionGoalAlignment": 0.8
+  },
+  "autoEvaluation": {
+    "enabled": true,
+    "threshold": 0.35
+  }
+}

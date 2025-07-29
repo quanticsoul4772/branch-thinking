@@ -1,0 +1,33 @@
+{
+  "name": "Rigorous Analysis",
+  "description": "Configuration for strict logical reasoning and analysis",
+  "evaluation": {
+    "thresholds": {
+      "similarity": 0.6,
+      "redundancy": 0.6,
+      "contradiction": 0.8,
+      "lowCoherence": 0.6,
+      "highContradiction": 0.3,
+      "lowInformationGain": 0.4,
+      "lowGoalAlignment": 0.4
+    },
+    "weights": {
+      "coherence": 0.25,
+      "contradiction": 0.3,
+      "informationGain": 0.15,
+      "goalAlignment": 0.2,
+      "confidenceGradient": 0.05,
+      "redundancy": 0.05
+    }
+  },
+  "branch": {
+    "pruneThreshold": 0.4,
+    "deadEndThreshold": 0.4,
+    "completionThreshold": 0.75,
+    "completionGoalAlignment": 0.75
+  },
+  "autoEvaluation": {
+    "enabled": true,
+    "threshold": 0.4
+  }
+}
