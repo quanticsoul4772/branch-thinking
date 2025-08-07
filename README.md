@@ -260,6 +260,24 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues.
 
 ## API Reference
 
+### OpenAPI Specification
+
+The complete API specification is available in machine-readable format:
+
+- **OpenAPI 3.1 Specification**: [`/spec/openapi.yaml`](spec/openapi.yaml)
+- **JSON Endpoint**: `http://localhost:3001/openapi.json` (when running the OpenAPI server)
+
+```bash
+# Start the OpenAPI documentation server
+npm run openapi:serve
+
+# Access the specification
+curl http://localhost:3001/openapi.json
+
+# Validate the specification
+npm run openapi:validate
+```
+
 ### Tool Definition
 ```typescript
 {
@@ -292,6 +310,8 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues.
   }
 }
 ```
+
+The OpenAPI specification includes comprehensive schemas for all input parameters, response formats, and command structures. It's automatically validated in CI to ensure consistency with the implementation.
 
 ## Documentation
 
