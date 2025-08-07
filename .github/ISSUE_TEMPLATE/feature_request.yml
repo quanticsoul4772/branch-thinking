@@ -1,0 +1,104 @@
+name: Feature Request
+description: Suggest an idea or enhancement for this project
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide detailed information to help us understand your request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like
+      placeholder: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Describe any alternative solutions or features you've considered
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: What type of feature is this?
+      options:
+        - MCP Command/Tool
+        - Analysis/Detection
+        - Performance Optimization
+        - User Interface/Output
+        - Configuration/Setup
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Expected Impact
+      description: What areas would this feature impact?
+      options:
+        - label: Core functionality (branch analysis, similarity detection)
+        - label: Performance (memory usage, speed)
+        - label: User experience (ease of use, output format)
+        - label: Developer experience (APIs, configuration)
+        - label: Compatibility (MCP protocol, Claude Desktop)
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve workflow
+        - High - Critical for my use case
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe your specific use case for this feature
+      placeholder: |
+        - Who would use this feature?
+        - When would they use it?
+        - How would it fit into their workflow?
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical aspects or implementation ideas you'd like to mention
+      placeholder: |
+        - Performance requirements
+        - Integration points
+        - API design preferences
+        - etc.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots about the feature request here
+      placeholder: Examples from other tools, mockups, related discussions, etc.
