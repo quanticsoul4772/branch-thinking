@@ -43,7 +43,7 @@
     "test:run": "vitest run",
     "demo": "node scripts/demo.js",
     "openapi:serve": "tsx src/openapi-server.ts",
-    "openapi:validate": "swagger-codegen validate -i spec/openapi.yaml",
+    "openapi:validate": "swagger-cli validate spec/openapi.yaml",
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
