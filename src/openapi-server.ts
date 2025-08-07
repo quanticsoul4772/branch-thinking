@@ -25,7 +25,6 @@ try {
   process.exit(1);
 }
 
-// No longer needed - using js-yaml library
 
 const server = createServer((req, res) => {
   // Set CORS headers
