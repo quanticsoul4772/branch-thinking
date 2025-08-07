@@ -1,0 +1,527 @@
+openapi: 3.1.0
+info:
+  title: Branch Thinking MCP Server API
+  version: 1.7.1
+  description: |
+    API specification for the Branch Thinking MCP (Model Context Protocol) server.
+    
+    This server provides multi-path reasoning capabilities with semantic analysis, 
+    contradiction detection, and persistence. It implements a single comprehensive 
+    tool that supports both direct thought input and command-based operations.
+    
+    **Key Features:**
+    - Multi-branch thought management
+    - Semantic analysis and similarity matching
+    - Contradiction detection and circular reasoning detection
+    - Cross-reference tracking between branches
+    - Automated evaluation with configurable scoring
+    - Import/export capabilities for persistence
+    
+  contact:
+    name: quanticsoul4772
+    url: https://github.com/quanticsoul4772/branch-thinking
+  license:
+    name: MIT
+    url: https://github.com/quanticsoul4772/branch-thinking/blob/main/LICENSE
+
+servers:
+  - url: stdio://
+    description: Standard I/O transport (MCP protocol)
+
+paths:
+  /mcp/tools:
+    get:
+      summary: List available MCP tools
+      operationId: listTools
+      description: Returns a list of all available tools in this MCP server
+      responses:
+        '200':
+          description: List of available tools
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tool'
+
+  /mcp/call:
+    post:
+      summary: Call an MCP tool
+      operationId: callTool
+      description: Execute a tool with the provided parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  enum: [branch-thinking]
+                  description: Name of the tool to call
+                arguments:
+                  oneOf:
+                    - $ref: '#/components/schemas/ThoughtInput'
+                    - $ref: '#/components/schemas/CommandInput'
+              required:
+                - name
+                - arguments
+      responses:
+        '200':
+          description: Tool execution result
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ThoughtResponse'
+                  - $ref: '#/components/schemas/CommandResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Tool:
+      type: object
+      properties:
+        name:
+          type: string
+          example: branch-thinking
+        description:
+          type: string
+        inputSchema:
+          type: object
+          description: JSON Schema defining the tool's input parameters
+      required:
+        - name
+        - description
+        - inputSchema
+
+    ThoughtInput:
+      type: object
+      description: Input for creating a new thought in a branch
+      properties:
+        content:
+          type: string
+          description: The thought content
+          example: "This analysis suggests that the primary hypothesis requires further validation through additional data collection."
+        type:
+          type: string
+          description: Type of thought
+          example: analysis
+          enum:
+            - analysis
+            - hypothesis  
+            - observation
+            - conclusion
+            - question
+            - insight
+        branchId:
+          type: string
+          description: Optional ID of the target branch (generated if not provided)
+          example: "branch-001"
+        parentBranchId:
+          type: string
+          description: Optional ID of the parent branch for hierarchical organization
+          example: "branch-parent"
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for this thought
+          example: 0.85
+        keyPoints:
+          type: array
+          items:
+            type: string
+          description: Key points identified in the thought
+          example: ["requires validation", "additional data needed", "primary hypothesis"]
+        crossRefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrossReference'
+          description: Cross-references to other branches
+      required:
+        - content
+        - type
+
+    CommandInput:
+      type: object
+      description: Input for executing a command operation
+      properties:
+        command:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - list
+                - focus
+                - history
+                - export
+                - import
+                - setGoal
+                - evaluate
+                - statistics
+                - findContradictions
+                - findStrongestPaths
+                - detectCircular
+                - prune
+                - toggleAutoEval
+                - configAutoEval
+                - suggestTools
+                - compareProfiles
+                - suggestMerges
+                - detectDrift
+                - generateCounterfactuals
+                - detectKnowledgeGaps
+                - synthesizeDialectical
+                - findSimilar
+                - jumpToRelated
+                - semanticPath
+              description: Type of command to execute
+            branchId:
+              type: string
+              description: Branch ID for commands that require it
+              example: "branch-001"
+            goal:
+              type: string
+              description: Goal for setGoal command
+              example: "Determine the most viable solution approach"
+            query:
+              type: string
+              description: Query string for search commands
+              example: "data validation approaches"
+            data:
+              type: object
+              description: Data object for various command parameters
+              properties:
+                entities:
+                  type: array
+                  description: For import operations
+                relations:
+                  type: array  
+                  description: For import operations
+                threshold:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  description: For pruning operations
+                  default: 0.2
+                limit:
+                  type: integer
+                  minimum: 1
+                  description: For result limiting
+                thoughtId:
+                  type: string
+                  description: For thought-specific operations
+                fromThoughtId:
+                  type: string
+                  description: For path operations
+                toThoughtId:
+                  type: string
+                  description: For path operations
+                branch1Id:
+                  type: string
+                  description: For comparison operations
+                branch2Id:
+                  type: string
+                  description: For comparison operations
+          required:
+            - type
+      required:
+        - command
+
+    CrossReference:
+      type: object
+      description: Reference between branches with relationship metadata
+      properties:
+        toBranch:
+          type: string
+          description: Target branch ID
+          example: "branch-002"
+        type:
+          type: string
+          enum:
+            - complementary
+            - contradictory
+            - builds_upon
+            - alternative
+            - supports
+          description: Type of relationship
+          example: "builds_upon"
+        reason:
+          type: string
+          description: Explanation of the relationship
+          example: "This branch extends the analysis from the previous findings"
+        strength:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Strength of the relationship
+          example: 0.8
+      required:
+        - toBranch
+        - type
+        - reason
+        - strength
+
+    ThoughtResponse:
+      type: object
+      description: Response from creating a new thought
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [text]
+              text:
+                type: string
+                description: JSON-stringified response data
+        isError:
+          type: boolean
+          description: Present and true for error responses
+      required:
+        - content
+
+    ThoughtResponseData:
+      type: object
+      description: Parsed content from a successful thought creation
+      properties:
+        thoughtId:
+          type: string
+          description: ID of the created thought
+          example: "thought-123"
+        branchId:
+          type: string
+          description: ID of the branch containing the thought
+          example: "branch-001"
+        branchState:
+          type: string
+          enum: [active, suspended, completed, dead_end]
+          description: Current state of the branch
+          example: "active"
+        branchPriority:
+          type: number
+          description: Priority level of the branch
+          example: 0.75
+        numThoughts:
+          type: integer
+          description: Total number of thoughts in the branch
+          example: 5
+        activeBranch:
+          type: string
+          description: ID of the currently active branch
+          example: "branch-001"
+        evaluation:
+          $ref: '#/components/schemas/Evaluation'
+      required:
+        - thoughtId
+        - branchId
+        - branchState
+        - branchPriority
+        - numThoughts
+        - activeBranch
+
+    CommandResponse:
+      type: object
+      description: Response from executing a command
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [text]
+              text:
+                type: string
+                description: JSON-stringified command result
+        isError:
+          type: boolean
+          description: Present and true for error responses
+      required:
+        - content
+
+    ErrorResponse:
+      type: object
+      description: Error response format
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [text]
+              text:
+                type: string
+                description: JSON-stringified error data
+        isError:
+          type: boolean
+          enum: [true]
+          description: Always true for error responses
+      required:
+        - content
+        - isError
+
+    ErrorResponseData:
+      type: object
+      description: Parsed error content
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Branch not found: branch-999"
+        status:
+          type: string
+          enum: [failed]
+          description: Status indicator
+        availableCommands:
+          type: array
+          items:
+            type: string
+          description: List of available commands (for unknown command errors)
+      required:
+        - error
+        - status
+
+    Evaluation:
+      type: object
+      description: Evaluation metrics for a thought or branch
+      properties:
+        score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall evaluation score
+          example: 0.78
+        quality:
+          type: string
+          enum: [excellent, good, moderate, poor]
+          description: Qualitative assessment
+          example: "good"
+        issues:
+          type: array
+          items:
+            type: string
+          description: Identified issues
+          example: ["low coherence", "high redundancy"]
+        suggestions:
+          type: array
+          items:
+            type: string
+          description: Improvement suggestions
+          example: ["Consider consolidating similar points", "Add supporting evidence"]
+        shouldPivot:
+          type: boolean
+          description: Whether the branch should pivot to a different approach
+          example: false
+      required:
+        - score
+        - quality
+        - issues
+        - suggestions
+        - shouldPivot
+
+    BranchSummary:
+      type: object
+      description: Summary information about a branch
+      properties:
+        id:
+          type: string
+          description: Branch identifier
+          example: "branch-001"
+        state:
+          type: string
+          enum: [active, suspended, completed, dead_end]
+          description: Current branch state
+          example: "active"
+        priority:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Branch priority level
+          example: 0.85
+        thoughtCount:
+          type: integer
+          minimum: 0
+          description: Number of thoughts in the branch
+          example: 12
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Timestamp of last update
+          example: "2024-01-15T10:30:00Z"
+        parentBranchId:
+          type: string
+          description: ID of parent branch if applicable
+          example: "branch-parent"
+      required:
+        - id
+        - state
+        - priority
+        - thoughtCount
+        - lastUpdated
+
+    Statistics:
+      type: object
+      description: Comprehensive reasoning statistics
+      properties:
+        totalBranches:
+          type: integer
+          minimum: 0
+          description: Total number of branches
+          example: 8
+        totalThoughts:
+          type: integer
+          minimum: 0
+          description: Total number of thoughts across all branches
+          example: 45
+        averageConfidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Average confidence score
+          example: 0.72
+        activeBranches:
+          type: integer
+          minimum: 0
+          description: Number of active branches
+          example: 3
+        contradictions:
+          type: integer
+          minimum: 0
+          description: Number of detected contradictions
+          example: 2
+        crossReferences:
+          type: integer
+          minimum: 0
+          description: Total number of cross-references
+          example: 15
+      required:
+        - totalBranches
+        - totalThoughts
+        - averageConfidence
+        - activeBranches
+        - contradictions
+        - crossReferences
+
+  securitySchemes: {}
+
+tags:
+  - name: MCP Tools
+    description: Model Context Protocol tool operations
+  - name: Thoughts
+    description: Thought management and creation
+  - name: Commands  
+    description: Branch and analysis commands
+  - name: Analysis
+    description: Semantic analysis and reasoning operations

@@ -42,6 +42,8 @@
     "test:coverage": "vitest --coverage",
     "test:run": "vitest run",
     "demo": "node scripts/demo.js",
+    "openapi:serve": "tsx src/openapi-server.ts",
+    "openapi:validate": "swagger-cli validate spec/openapi.yaml",
     "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
@@ -66,6 +68,9 @@
     "prettier": "^3.2.5",
     "husky": "^9.0.0",
     "lint-staged": "^15.2.0",
+    "tsx": "^4.7.0",
+    "js-yaml": "^4.1.0",
+    "@types/js-yaml": "^4.0.5",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^11.1.0",
     "@semantic-release/git": "^10.0.1",
