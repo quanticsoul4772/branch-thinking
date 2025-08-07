@@ -374,24 +374,45 @@ components:
 
     ErrorResponseData:
       type: object
-      description: Parsed error content
+      description: Structured error content matching deterministic format
       properties:
-        error:
+        ok:
+          type: boolean
+          enum: [false]
+          description: Always false for errors
+        code:
           type: string
-          description: Error message
+          description: Machine-readable error code
+          enum:
+            - INVALID_INPUT
+            - MISSING_PARAMETER
+            - INVALID_PARAMETER_TYPE
+            - BRANCH_NOT_FOUND
+            - THOUGHT_NOT_FOUND
+            - COMMAND_NOT_FOUND
+            - CIRCULAR_REFERENCE
+            - CONTRADICTION_DETECTED
+            - EVALUATION_FAILED
+            - IMPORT_FAILED
+            - EXPORT_FAILED
+            - SEMANTIC_ANALYSIS_ERROR
+            - CONFIGURATION_ERROR
+            - INTERNAL_ERROR
+            - UNKNOWN_ERROR
+          example: "BRANCH_NOT_FOUND"
+        message:
+          type: string
+          description: Human-readable error message
           example: "Branch not found: branch-999"
-        status:
-          type: string
-          enum: [failed]
-          description: Status indicator
-        availableCommands:
-          type: array
-          items:
-            type: string
-          description: List of available commands (for unknown command errors)
+        retryable:
+          type: boolean
+          description: Whether the operation can be retried
+          example: false
       required:
-        - error
-        - status
+        - ok
+        - code
+        - message
+        - retryable
 
     Evaluation:
       type: object
