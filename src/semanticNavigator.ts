@@ -41,9 +41,12 @@ export class SemanticNavigator {
   ): Promise<SimilarThought[]> {
     const queryEmbedding = await semanticSimilarity.getEmbedding(query);
     
-    // Process all branches in parallel
+    // Process all branches in parallel with error handling
     const branchPromises = graph.getAllBranches().map(branch =>
-      this.findSimilarInBranch(graph, branch, queryEmbedding)
+      this.findSimilarInBranch(graph, branch, queryEmbedding).catch(error => {
+        console.warn(`Failed to process branch ${branch.id}:`, error);
+        return [];
+      })
     );
     
     const branchResults = await Promise.all(branchPromises);
