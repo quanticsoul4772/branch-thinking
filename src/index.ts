@@ -150,16 +150,9 @@ class BranchingThoughtServer {
         }]
       };
     } catch (error) {
-      return {
-        content: [{
-          type: "text",
-          text: JSON.stringify({
-            error: error instanceof Error ? error.message : String(error),
-            status: 'failed'
-          }, null, 2)
-        }],
-        isError: true
-      };
+      const { StructuredErrorBuilder, toMCPResponse } = await import('./utils/structuredErrors.js');
+      const structuredError = StructuredErrorBuilder.fromError(error);
+      return toMCPResponse(structuredError);
     }
   }
 
@@ -207,13 +200,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return await thinkingServer.processThought(request.params.arguments);
   }
 
-  return {
-    content: [{
-      type: "text",
-      text: `Unknown tool: ${request.params.name}`
-    }],
-    isError: true
-  };
+  const { StructuredErrorBuilder, toMCPResponse } = await import('./utils/structuredErrors.js');
+  const structuredError = StructuredErrorBuilder.commandNotFound(request.params.name, ['branch-thinking']);
+  return toMCPResponse(structuredError);
 });
 
 async function runServer() {
