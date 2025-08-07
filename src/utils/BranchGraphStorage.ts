@@ -4,6 +4,11 @@ import {
   ThoughtEvent,
   ProcessedText
 } from '../types.js';
+import {
+  BranchThinkingError,
+  ValidationError,
+  ErrorHandler
+} from './customErrors.js';
 
 /**
  * Storage management for BranchGraph
@@ -39,21 +44,50 @@ export class BranchGraphStorage {
     confidence: number;
     keyPoints: string[];
   }): Promise<void> {
-    if (this.hasThought(data.thoughtId)) return;
-    
-    const thought: ThoughtData = {
-      id: data.thoughtId,
-      content: data.content,
-      branchId: data.branchId,
-      timestamp: new Date(),
-      metadata: {
-        type: data.type,
-        confidence: data.confidence,
-        keyPoints: data.keyPoints
+    try {
+      // Validate input data
+      if (!data || typeof data !== 'object') {
+        throw new ValidationError('Data must be an object', 'data', data);
       }
-    };
-    
-    this.thoughts.set(data.thoughtId, thought);
+      
+      if (!data.thoughtId || typeof data.thoughtId !== 'string') {
+        throw new ValidationError('Thought ID must be a non-empty string', 'thoughtId', data.thoughtId);
+      }
+      
+      if (!data.content || typeof data.content !== 'string') {
+        throw new ValidationError('Content must be a non-empty string', 'content', data.content);
+      }
+      
+      if (!data.branchId || typeof data.branchId !== 'string') {
+        throw new ValidationError('Branch ID must be a non-empty string', 'branchId', data.branchId);
+      }
+      
+      if (typeof data.confidence !== 'number' || data.confidence < 0 || data.confidence > 1) {
+        throw new ValidationError('Confidence must be a number between 0 and 1', 'confidence', data.confidence);
+      }
+      
+      if (!Array.isArray(data.keyPoints)) {
+        throw new ValidationError('Key points must be an array', 'keyPoints', data.keyPoints);
+      }
+      
+      if (this.hasThought(data.thoughtId)) return;
+      
+      const thought: ThoughtData = {
+        id: data.thoughtId,
+        content: data.content,
+        branchId: data.branchId,
+        timestamp: new Date(),
+        metadata: {
+          type: data.type,
+          confidence: data.confidence,
+          keyPoints: data.keyPoints
+        }
+      };
+      
+      this.thoughts.set(data.thoughtId, thought);
+    } catch (error) {
+      throw ErrorHandler.handle(error);
+    }
   }
   
   /**
@@ -97,31 +131,85 @@ export class BranchGraphStorage {
    * Create new branch
    */
   createBranch(branchId: string, parentBranchId?: string): void {
-    const branch: BranchNode = {
-      id: branchId,
-      state: 'active',
-      priority: 0.5,
-      confidence: 0.5,
-      thoughtIds: [],
-      thoughts: [],
-      parentId: parentBranchId,
-      childIds: new Set<string>(),
-      lastEvaluationIndex: 0
-    };
-    
-    this.branches.set(branchId, branch);
+    try {
+      if (!branchId || typeof branchId !== 'string') {
+        throw new ValidationError('Branch ID must be a non-empty string', 'branchId', branchId);
+      }
+      
+      if (this.hasBranch(branchId)) {
+        throw new ValidationError(`Branch with ID '${branchId}' already exists`, 'branchId', branchId);
+      }
+      
+      if (parentBranchId !== undefined) {
+        if (typeof parentBranchId !== 'string' || parentBranchId.length === 0) {
+          throw new ValidationError('Parent branch ID must be a non-empty string', 'parentBranchId', parentBranchId);
+        }
+        
+        if (!this.hasBranch(parentBranchId)) {
+          throw new ValidationError(`Parent branch '${parentBranchId}' does not exist`, 'parentBranchId', parentBranchId);
+        }
+      }
+      
+      const branch: BranchNode = {
+        id: branchId,
+        state: 'active',
+        priority: 0.5,
+        confidence: 0.5,
+        thoughtIds: [],
+        thoughts: [],
+        parentId: parentBranchId,
+        childIds: new Set<string>(),
+        lastEvaluationIndex: 0
+      };
+      
+      this.branches.set(branchId, branch);
+      
+      // Update parent's children set if parent exists
+      if (parentBranchId) {
+        const parent = this.branches.get(parentBranchId);
+        if (parent) {
+          parent.childIds.add(branchId);
+        }
+      }
+    } catch (error) {
+      throw ErrorHandler.handle(error);
+    }
   }
   
   /**
    * Add thought to branch
    */
   addThoughtToBranch(thoughtId: string, branchId: string): void {
-    const branch = this.getBranch(branchId);
-    const thought = this.getThought(thoughtId);
-    if (!branch || !thought) return;
-    
-    branch.thoughtIds.push(thoughtId);
-    branch.thoughts.push(thought);
+    try {
+      if (!thoughtId || typeof thoughtId !== 'string') {
+        throw new ValidationError('Thought ID must be a non-empty string', 'thoughtId', thoughtId);
+      }
+      
+      if (!branchId || typeof branchId !== 'string') {
+        throw new ValidationError('Branch ID must be a non-empty string', 'branchId', branchId);
+      }
+      
+      const branch = this.getBranch(branchId);
+      const thought = this.getThought(thoughtId);
+      
+      if (!branch) {
+        throw new ValidationError(`Branch '${branchId}' does not exist`, 'branchId', branchId);
+      }
+      
+      if (!thought) {
+        throw new ValidationError(`Thought '${thoughtId}' does not exist`, 'thoughtId', thoughtId);
+      }
+      
+      // Check if thought is already in branch to prevent duplicates
+      if (branch.thoughtIds.includes(thoughtId)) {
+        return; // Thought already exists in branch, no error
+      }
+      
+      branch.thoughtIds.push(thoughtId);
+      branch.thoughts.push(thought);
+    } catch (error) {
+      throw ErrorHandler.handle(error);
+    }
   }
   
   /**

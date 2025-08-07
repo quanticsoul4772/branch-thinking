@@ -1,5 +1,9 @@
 import { ThoughtData } from '../types.js';
 import { BranchGraphStorage } from './BranchGraphStorage.js';
+import {
+  ValidationError,
+  ErrorHandler
+} from './customErrors.js';
 
 /**
  * Search functionality for BranchGraph
@@ -12,28 +16,44 @@ export class BranchGraphSearch {
    * Breadth-first search from a starting branch
    */
   breadthFirstSearch(startBranchId: string, maxDepth: number): Set<string> {
-    const visited = new Set<string>();
-    const queue: { branchId: string; depth: number }[] = [
-      { branchId: startBranchId, depth: 0 }
-    ];
-    
-    while (queue.length > 0) {
-      const { branchId, depth } = queue.shift()!;
+    try {
+      if (!startBranchId || typeof startBranchId !== 'string') {
+        throw new ValidationError('Start branch ID must be a non-empty string', 'startBranchId', startBranchId);
+      }
       
-      if (depth > maxDepth || visited.has(branchId)) continue;
+      if (typeof maxDepth !== 'number' || maxDepth < 0) {
+        throw new ValidationError('Max depth must be a non-negative number', 'maxDepth', maxDepth);
+      }
       
-      visited.add(branchId);
+      if (!this.storage.hasBranch(startBranchId)) {
+        throw new ValidationError(`Start branch '${startBranchId}' does not exist`, 'startBranchId', startBranchId);
+      }
       
-      // Add child branches to queue
-      const childBranches = this.getChildBranches(branchId);
-      childBranches.forEach(childId => {
-        if (!visited.has(childId)) {
-          queue.push({ branchId: childId, depth: depth + 1 });
-        }
-      });
+      const visited = new Set<string>();
+      const queue: { branchId: string; depth: number }[] = [
+        { branchId: startBranchId, depth: 0 }
+      ];
+      
+      while (queue.length > 0) {
+        const { branchId, depth } = queue.shift()!;
+        
+        if (depth > maxDepth || visited.has(branchId)) continue;
+        
+        visited.add(branchId);
+        
+        // Add child branches to queue
+        const childBranches = this.getChildBranches(branchId);
+        childBranches.forEach(childId => {
+          if (!visited.has(childId)) {
+            queue.push({ branchId: childId, depth: depth + 1 });
+          }
+        });
+      }
+      
+      return visited;
+    } catch (error) {
+      throw ErrorHandler.handle(error);
     }
-    
-    return visited;
   }
   
   /**
@@ -49,17 +69,34 @@ export class BranchGraphSearch {
    * Search thoughts by pattern
    */
   searchThoughts(pattern: RegExp): { thoughtId: string; branchId: string }[] {
-    const results: { thoughtId: string; branchId: string }[] = [];
-    
-    this.storage.getAllBranches().forEach(branch => {
-      branch.thoughts.forEach(thought => {
-        if (pattern.test(thought.content)) {
-          results.push({ thoughtId: thought.id, branchId: branch.id });
-        }
-      });
-    });
-    
-    return results;
+    try {
+      if (!(pattern instanceof RegExp)) {
+        throw new ValidationError('Pattern must be a valid RegExp object', 'pattern', pattern);
+      }
+      
+      const results: { thoughtId: string; branchId: string }[] = [];
+      
+      try {
+        this.storage.getAllBranches().forEach(branch => {
+          branch.thoughts.forEach(thought => {
+            try {
+              if (pattern.test(thought.content)) {
+                results.push({ thoughtId: thought.id, branchId: branch.id });
+              }
+            } catch (regexError) {
+              // Skip thoughts that cause regex errors but continue processing
+              console.warn(`RegExp test failed for thought ${thought.id}: ${regexError}`);
+            }
+          });
+        });
+      } catch (storageError) {
+        throw new ValidationError('Failed to access storage data', 'storage', storageError);
+      }
+      
+      return results;
+    } catch (error) {
+      throw ErrorHandler.handle(error);
+    }
   }
   
   /**
