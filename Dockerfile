@@ -26,7 +26,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "process.exit(0)" || exit 1
+  CMD node -e "require('./dist/index.js').healthCheck ? process.exit(0) : process.exit(1)" || exit 1
 
 # Run the application
 CMD ["node", "dist/index.js"]
