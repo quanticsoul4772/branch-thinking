@@ -1,6 +1,25 @@
 # Branch Thinking MCP Server
 
+[![CI](https://github.com/quanticsoul4772/branch-thinking/actions/workflows/ci.yml/badge.svg)](https://github.com/quanticsoul4772/branch-thinking/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/quanticsoul4772/branch-thinking/branch/main/graph/badge.svg)](https://codecov.io/gh/quanticsoul4772/branch-thinking)
+[![npm version](https://badge.fury.io/js/branch-thinking-mcp.svg)](https://badge.fury.io/js/branch-thinking-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://hub.docker.com)
+
 An MCP server for multi-path reasoning with semantic analysis, contradiction detection, and persistence capabilities.
+
+## Quick Start
+
+```bash
+# Install globally
+npm install -g branch-thinking-mcp
+
+# Run demo
+npx branch-thinking-mcp demo
+
+# Or use with Docker
+docker run -d branch-thinking-mcp
+```
 
 ## Features
 
@@ -13,6 +32,29 @@ An MCP server for multi-path reasoning with semantic analysis, contradiction det
 - **Tool Integration**: Suggests relevant MCP tools based on context
 
 ## Architecture
+
+```mermaid
+graph TD
+    A[MCP Client] --> B[Branch Thinking Server]
+    B --> C[Branch Graph]
+    C --> D[Thought Storage]
+    C --> E[Semantic Analysis]
+    C --> F[Contradiction Detection]
+    
+    D --> G[Content-Addressed Store]
+    E --> H[Embedding Manager]
+    E --> I[Similarity Matrix]
+    F --> J[Bloom Filters]
+    F --> K[Circular Reference Detector]
+    
+    B --> L[Evaluation Engine]
+    L --> M[Quality Metrics]
+    L --> N[Auto-Assessment]
+    
+    B --> O[Tool Integration]
+    O --> P[Suggestion Engine]
+    O --> Q[Context Analysis]
+```
 
 ### Core Components
 
@@ -32,7 +74,37 @@ An MCP server for multi-path reasoning with semantic analysis, contradiction det
 ## Installation
 
 ```bash
-npm install @claude/branch-thinking-mcp
+npm install -g branch-thinking-mcp
+```
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/quanticsoul4772/branch-thinking.git
+cd branch-thinking
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Start development server
+npm run dev
+```
+
+### Docker Setup
+
+```bash
+# Build image
+docker build -t branch-thinking-mcp .
+
+# Run with docker-compose
+docker-compose up -d
+
+# Health check
+docker-compose ps
 ```
 
 ## Commands
@@ -158,6 +230,33 @@ The server ensures clean MCP protocol communication by:
 3. Filtering stdout to only allow JSON-RPC messages
 
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `ENOENT: no such file or directory` | Run `npm run build` first |
+| `Permission denied` on Docker | Check Docker daemon is running |
+| High memory usage | Reduce embedding cache size in config |
+| Slow semantic analysis | Increase similarity threshold |
+| Type errors during build | Run `npm run typecheck` for details |
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Run tests: `npm test`
+4. Commit changes: `git commit -m 'feat: add amazing feature'`
+5. Push to branch: `git push origin feature/amazing-feature`
+6. Open a Pull Request
+
+## Roadmap
+
+- [ ] GraphQL API endpoint
+- [ ] Web UI for visualization
+- [ ] Integration with popular IDEs  
+- [ ] Advanced reasoning patterns
+- [ ] Multi-language support
 
 ## API Reference
 

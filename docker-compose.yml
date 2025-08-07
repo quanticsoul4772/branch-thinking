@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  branch-thinking-mcp:
+    build: .
+    container_name: branch-thinking-mcp
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    volumes:
+      - ./data:/app/data:rw
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+  # Example client integration
+  example-client:
+    image: node:18-alpine
+    container_name: branch-thinking-client
+    depends_on:
+      branch-thinking-mcp:
+        condition: service_healthy
+    working_dir: /app
+    volumes:
+      - ./examples:/app:ro
+    command: ["tail", "-f", "/dev/null"]
+    profiles: ["dev"]
+
+volumes:
+  data:
+    driver: local
