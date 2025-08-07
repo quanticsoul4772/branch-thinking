@@ -131,7 +131,7 @@ export class StructuredErrorBuilder {
   static fromError(error: unknown): StructuredError {
     if (error instanceof Error) {
       // Try to extract code from error message if it follows a pattern
-      const codeMatch = error.message.match(/^(\w+):\s*(.*)/);
+      const codeMatch = error.message.match(/^([A-Z_]+):\s*(.*)/);
       if (codeMatch) {
         const [, code, message] = codeMatch;
         if (Object.values(StructuredErrorCode).includes(code as StructuredErrorCode)) {
