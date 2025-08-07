@@ -1,5 +1,5 @@
 {
-  "name": "@quanticsoul4772/branch-thinking-mcp",
+  "name": "branch-thinking-mcp",
   "version": "1.7.1",
   "description": "Multi-path reasoning MCP server with semantic analysis, contradiction detection, and persistence capabilities",
   "author": "quanticsoul4772",
@@ -30,18 +30,49 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && chmod +x dist/index.js",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "watch": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run",
+    "demo": "node scripts/demo.js",
+    "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
     "@xenova/transformers": "^2.17.2",
-    "chalk": "^5.3.0"
+    "chalk": "^5.3.0",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1"
   },
   "devDependencies": {
     "@types/node": "^22",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "tsup": "^8.0.2",
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "@vitest/ui": "^1.2.0",
+    "@eslint/js": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.2.5",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "semantic-release": "^22.0.12"
   },
   "engines": {
     "node": ">=16.0.0"
