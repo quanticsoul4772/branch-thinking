@@ -57,6 +57,24 @@ export const PATTERNS = {
     kebabCase: /-+/g
   },
   
+  circularReasoning: {
+    // Patterns for detecting circular reasoning components
+    premises: [
+      /(?:given|assuming|if|suppose|let's say|premise:)\s+([^,.]+)/g,
+      /(?:based on|according to|from)\s+([^,.]+)/g,
+      /(?:because|since|as)\s+([^,.]+)/g
+    ],
+    conclusions: [
+      /(?:therefore|thus|hence|so|consequently)\s+([^,.]+)/g,
+      /(?:this means|this shows|we can conclude)\s+([^,.]+)/g,
+      /(?:proves|demonstrates|indicates)\s+([^,.]+)/g
+    ],
+    dependencies: [
+      /(?:as shown in|see|refer to|from)\s+thought[- ]?(\w+)/g,
+      /(?:building on|extending|following)\s+(\w+)/g
+    ]
+  },
+
   validation: {
     // Validation patterns
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

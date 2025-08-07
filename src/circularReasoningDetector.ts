@@ -1,4 +1,3 @@
-// TODO: Manually review and replace hardcoded patterns with PATTERNS object
 import { PATTERNS, PatternMatchers } from './config/patterns';
 /**
  * Circular Reasoning Detector
@@ -53,38 +52,21 @@ export class CircularReasoningDetector {
    * Extract premises from normalized content
    */
   private extractPremises(normalized: string): string[] {
-    const premisePatterns = [
-      /(?:given|assuming|if|suppose|let's say|premise:)\s+([^,.]+)/g,
-      /(?:based on|according to|from)\s+([^,.]+)/g,
-      /(?:because|since|as)\s+([^,.]+)/g
-    ];
-
-    return this.extractMatches(normalized, premisePatterns);
+    return this.extractMatches(normalized, PATTERNS.circularReasoning.premises);
   }
 
   /**
    * Extract conclusions from normalized content
    */
   private extractConclusions(normalized: string): string[] {
-    const conclusionPatterns = [
-      /(?:therefore|thus|hence|so|consequently)\s+([^,.]+)/g,
-      /(?:this means|this shows|we can conclude)\s+([^,.]+)/g,
-      /(?:proves|demonstrates|indicates)\s+([^,.]+)/g
-    ];
-
-    return this.extractMatches(normalized, conclusionPatterns);
+    return this.extractMatches(normalized, PATTERNS.circularReasoning.conclusions);
   }
 
   /**
    * Extract dependencies from normalized content
    */
   private extractDependencies(normalized: string): string[] {
-    const dependencyPatterns = [
-      /(?:as shown in|see|refer to|from)\s+thought[- ]?(\w+)/g,
-      /(?:building on|extending|following)\s+(\w+)/g
-    ];
-
-    return this.extractMatches(normalized, dependencyPatterns);
+    return this.extractMatches(normalized, PATTERNS.circularReasoning.dependencies);
   }
 
   /**
