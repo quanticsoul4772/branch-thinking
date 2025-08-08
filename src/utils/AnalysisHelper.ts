@@ -36,8 +36,12 @@ export class AnalysisHelper {
     const stats = graph.getStatistics();
     const bloomStats = stats.contradictionFilterStats;
     
-    if (bloomStats && bloomStats.positive.numElements > 0) {
-      const falsePositiveRate = bloomStats.positive.falsePositiveRate;
+    if (bloomStats && typeof bloomStats === 'object' && 'positive' in bloomStats && 
+        typeof bloomStats.positive === 'object' && 
+        bloomStats.positive && 
+        'numElements' in bloomStats.positive &&
+        (bloomStats.positive as any).numElements > 0) {
+      const falsePositiveRate = (bloomStats.positive as any).falsePositiveRate;
       
       if (falsePositiveRate < config.bloomFilter.fprConfidenceThreshold) {
         contradictions.push({

@@ -9,10 +9,15 @@ process.env.HF_HUB_VERBOSITY = 'error';
 process.env.TOKENIZERS_PARALLELISM = 'false';
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+// eslint-disable-next-line no-console
 const originalConsoleLog = console.log;
+// eslint-disable-next-line no-console
 const originalConsoleInfo = console.info;
+// eslint-disable-next-line no-console
 const originalConsoleWarn = console.warn;
+// eslint-disable-next-line no-console
 const originalConsoleDebug = console.debug;
+// eslint-disable-next-line no-console
 const originalConsoleError = console.error;
 
 // Completely silence stdout except for JSON-RPC messages

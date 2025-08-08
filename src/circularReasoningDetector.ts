@@ -540,7 +540,16 @@ export class CircularReasoningDetector {
   /**
    * Get statistics
    */
-  getStats() {
+  getStats(): {
+    totalThoughts: number;
+    totalPremises: number;
+    totalConclusions: number;
+    thoughtsWithDependencies: number;
+    totalDependencies: number;
+    averageDependencies: number;
+    patternsChecked: number;
+    circularPatternsDetected: number;
+  } {
     const depValues = Array.from(this.thoughtDependencies.values());
     const thoughtsWithDeps = depValues.filter(deps => deps.size > 0).length;
     const totalDeps = depValues.reduce((sum, deps) => sum + deps.size, 0);
@@ -550,7 +559,10 @@ export class CircularReasoningDetector {
       totalPremises: this.premiseMap.size,
       totalConclusions: this.conclusionMap.size,
       thoughtsWithDependencies: thoughtsWithDeps,
-      averageDependencies: this.thoughtContent.size > 0 ? totalDeps / this.thoughtContent.size : 0
+      totalDependencies: totalDeps,
+      averageDependencies: this.thoughtContent.size > 0 ? totalDeps / this.thoughtContent.size : 0,
+      patternsChecked: 0,
+      circularPatternsDetected: 0
     };
   }
 }

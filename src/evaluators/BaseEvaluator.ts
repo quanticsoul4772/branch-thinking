@@ -22,7 +22,8 @@ export abstract class BaseEvaluator {
     try {
       return await this.performEvaluation(branch, parentBranch, goal);
     } catch (error) {
-      console.error(`Error in ${this.evaluatorName}:`, error);
+      // Error in evaluator - return default result
+      // console.error(`Error in ${this.evaluatorName}:`, error);
       return this.createDefaultResult();
     }
   }

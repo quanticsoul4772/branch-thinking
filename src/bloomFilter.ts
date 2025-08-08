@@ -133,7 +133,13 @@ export class BloomFilter {
   /**
    * Get filter statistics
    */
-  getStats() {
+  getStats(): {
+    size: number;
+    hashFunctions: number;
+    numElements: number;
+    falsePositiveRate: number;
+    sizeInBytes: number;
+  } {
     return {
       size: this.size,
       hashFunctions: this.hashFunctions,
@@ -310,7 +316,11 @@ export class ContradictionBloomFilter {
   /**
    * Get filter statistics
    */
-  getStats() {
+  getStats(): {
+    positive: ReturnType<BloomFilter['getStats']>;
+    negative: ReturnType<BloomFilter['getStats']>;
+    pairs: ReturnType<BloomFilter['getStats']>;
+  } {
     return {
       positive: this.positiveAssertions.getStats(),
       negative: this.negativeAssertions.getStats(),

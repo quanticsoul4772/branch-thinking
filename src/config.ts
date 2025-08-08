@@ -247,7 +247,7 @@ export class ConfigLoader {
         const envConfig = JSON.parse(process.env.BRANCH_THINKING_CONFIG);
         this.deepMerge(config, envConfig);
       } catch (e) {
-        console.error('Failed to parse BRANCH_THINKING_CONFIG:', e);
+        // Failed to parse BRANCH_THINKING_CONFIG - silently skip
       }
     }
     

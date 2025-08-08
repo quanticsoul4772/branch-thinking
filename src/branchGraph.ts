@@ -3,12 +3,9 @@ import {
   ThoughtData, 
   BranchNode, 
   ThoughtEvent, 
-  EventType,
   BranchingThoughtInput,
   CrossReference,
-  CrossRefType,
-  Insight,
-  ProcessedText
+  CrossRefType
 } from './types.js';
 import { ContradictionBloomFilter } from './bloomFilter.js';
 import { SimilarityMatrix } from './sparseMatrix.js';
@@ -19,7 +16,8 @@ import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
 import { BranchGraphValidator, ValidatedThoughtInput } from './BranchGraphValidator.js';
-import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
+// Error types available if needed
+// import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
 
 export interface AddThoughtParams {
   content: string;
@@ -384,7 +382,7 @@ export class BranchGraph {
   }
 
   // Analytics methods
-  getStatistics(): any {
+  getStatistics(): Record<string, unknown> {
     return {
       ...this.analytics.getBasicStats(),
       contradictionFilterStats: this.contradictionFilter.getStats(),
@@ -454,12 +452,12 @@ export class BranchGraph {
     return this.analytics.compareProfiles();
   }
 
-  async suggestMerges(): Promise<any> {
-    return this.analytics.suggestMerges();
+  suggestMerges(): Promise<any> {
+    return Promise.resolve(this.analytics.suggestMerges());
   }
 
-  async detectDrift(): Promise<any> {
-    return this.analytics.detectDrift();
+  detectDrift(): Promise<any> {
+    return Promise.resolve(this.analytics.detectDrift());
   }
 
   // Export methods
