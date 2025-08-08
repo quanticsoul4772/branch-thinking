@@ -49,8 +49,19 @@ export interface LegacyBranch {
   priority: number;
   confidence: number;
   thoughts: ThoughtData[];
-  insights: any[];
-  crossRefs: any[];
+  insights: Array<{
+    id: string;
+    type: string;
+    content: string;
+    timestamp: string;
+  }>;
+  crossRefs: Array<{
+    toBranch: string;
+    type: CrossRefType;
+    reason: string;
+    strength: number;
+    thoughtId?: string;
+  }>;
   parentBranchId: string | null;
 }
 
