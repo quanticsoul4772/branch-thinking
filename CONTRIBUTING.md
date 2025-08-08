@@ -17,8 +17,8 @@ Thank you for your interest in contributing to Branch Thinking! This document pr
 Branch Thinking is a sophisticated MCP server that provides differential thinking capabilities through graph-based analysis, semantic similarity detection, and circular reasoning detection. Before contributing, please familiarize yourself with:
 
 - The [README.md](./README.md) for project overview
-- The [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed architecture
-- The [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common issues
+- The [README.md](./README.md) for detailed architecture information
+- The project issues and discussions for troubleshooting common problems
 
 ## Development Setup
 
