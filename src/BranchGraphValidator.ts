@@ -34,6 +34,8 @@ export interface ValidatedThoughtInput extends BranchingThoughtInput {
  * and data structures used throughout the branch-thinking system.
  */
 export class BranchGraphValidator {
+  // Validation constants
+  private static readonly MAX_BRANCH_ID_LENGTH = 100;
   
   /**
    * Validates and normalizes a BranchingThoughtInput
@@ -281,6 +283,15 @@ export class BranchGraphValidator {
         'Branch ID cannot be empty',
         'branchId',
         branchId
+      );
+    }
+
+    // Check length constraint
+    if (branchId.length > this.MAX_BRANCH_ID_LENGTH) {
+      throw new ValidationError(
+        `Branch ID exceeds maximum length of ${this.MAX_BRANCH_ID_LENGTH} characters`,
+        'branchId',
+        { length: branchId.length, maxLength: this.MAX_BRANCH_ID_LENGTH }
       );
     }
 
