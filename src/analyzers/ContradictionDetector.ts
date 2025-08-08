@@ -280,7 +280,9 @@ export class ContradictionDetector {
     let match;
     
     while ((match = pattern.exec(text)) !== null) {
-      matches.push(match[1]);
+      if (match[1]) {
+        matches.push(match[1]);
+      }
     }
     
     return matches;

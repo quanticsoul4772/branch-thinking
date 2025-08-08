@@ -78,7 +78,9 @@ export class CircularReasoningDetector {
     for (const pattern of patterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
-        matches.push(match[1].trim());
+        if (match[1]) {
+          matches.push(match[1].trim());
+        }
       }
     }
 

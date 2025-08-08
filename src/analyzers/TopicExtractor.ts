@@ -76,7 +76,9 @@ export class TopicExtractor {
     for (const thought of thoughts) {
       let match;
       while ((match = phrasePattern.exec(thought.content)) !== null) {
-        phrases.push(match[1].trim());
+        if (match[1]) {
+          phrases.push(match[1].trim());
+        }
       }
     }
 
