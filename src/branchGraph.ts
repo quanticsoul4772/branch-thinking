@@ -625,7 +625,6 @@ export class BranchGraph {
     if (branchId.length > BranchGraph.MAX_BRANCH_ID_LENGTH) {
       throw new Error(`Parameter '${paramName}' must not exceed ${BranchGraph.MAX_BRANCH_ID_LENGTH} characters`);
     }
-    }
   }
   
   /**
