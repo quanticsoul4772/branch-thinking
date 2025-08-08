@@ -42,7 +42,22 @@ console.debug = (): void => {};
 console.error = (...args: any[]): void => {
   // Only log actual errors to stderr for debugging
   if (args.some(arg => arg instanceof Error)) {
-    process.stderr.write(`[ERROR] ${args.join(' ')}\n`);
+    const safeStr = args
+      .map(a => {
+        if (a instanceof Error) {
+          return `${a.name}: ${a.message}`;
+        }
+        if (typeof a === 'string') {
+          return a;
+        }
+        try {
+          return JSON.stringify(a);
+        } catch {
+          return String(a);
+        }
+      })
+      .join(' ');
+    process.stderr.write(`[ERROR] ${safeStr}\n`);
   }
 };
 
