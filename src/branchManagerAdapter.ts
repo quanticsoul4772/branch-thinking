@@ -85,11 +85,12 @@ export class BranchManagerAdapter {
     this.activeBranchId = actualBranchId;
     
     // Auto-evaluate if enabled
-    const feedback = this.autoEvalConfig.enabled 
-      ? await this.performAutoEvaluation(actualBranchId)
-      : undefined;
+    const result: { thought: ThoughtData; feedback?: EvaluationFeedback } = { thought };
+    if (this.autoEvalConfig.enabled) {
+      result.feedback = await this.performAutoEvaluation(actualBranchId);
+    }
     
-    return { thought, feedback };
+    return result;
   }
 
   /**
