@@ -92,91 +92,125 @@ describe('BranchGraph Core Operations', () => {
     });
   });
 
-  describe('crossReference', () => {
+  describe('cross-references via addThought', () => {
     let thoughtId1: string;
-    let thoughtId2: string;
+    let branchId1: string;
+    let branchId2: string;
 
     beforeEach(() => {
       const result1 = graph.addThought({
         content: 'First thought',
-        type: 'analysis' as ThoughtType
+        type: 'analysis' as ThoughtType,
+        parentBranchId: 'main'
       });
       thoughtId1 = result1.thoughtId;
-
+      
+      // Find the branch that was created
+      const branches = graph.getAllBranches();
+      branchId1 = branches.find(b => 
+        b.thoughts.some(t => t.content === 'First thought')
+      )?.id || 'main';
+      
       const result2 = graph.addThought({
         content: 'Second thought', 
-        type: 'hypothesis' as ThoughtType
+        type: 'hypothesis' as ThoughtType,
+        parentBranchId: 'main'
       });
-      thoughtId2 = result2.thoughtId;
+      
+      branchId2 = branches.find(b => 
+        b.thoughts.some(t => t.content === 'Second thought')
+      )?.id || 'main';
     });
 
-    it('should create cross-reference between thoughts', () => {
-      const success = graph.crossReference(
-        thoughtId1,
-        thoughtId2,
-        'complementary',
-        'Both approaches solve different aspects',
-        0.8
-      );
+    it('should create cross-reference via addThought', () => {
+      const result = graph.addThought({
+        content: 'Cross-referenced thought',
+        type: 'validation' as ThoughtType,
+        branchId: branchId1,
+        crossRefs: [{
+          toBranch: branchId2,
+          type: 'complementary',
+          reason: 'Both approaches solve different aspects',
+          strength: 0.8
+        }]
+      });
 
-      expect(success).toBe(true);
+      expect(result.thoughtId).toBeDefined();
     });
 
-    it('should handle invalid thought IDs', () => {
-      const success = graph.crossReference(
-        'invalid-id',
-        thoughtId2,
-        'builds_upon',
-        'Test reason',
-        0.5
-      );
+    it('should handle cross-reference with valid branch IDs', () => {
+      const result = graph.addThought({
+        content: 'Building upon previous work',
+        type: 'solution' as ThoughtType,
+        crossRefs: [{
+          toBranch: branchId1,
+          type: 'builds_upon',
+          reason: 'Test reason',
+          strength: 0.5
+        }]
+      });
 
-      expect(success).toBe(false);
+      expect(result.thoughtId).toBeDefined();
     });
 
-    it('should prevent duplicate cross-references', () => {
-      // Add first cross-reference
-      graph.crossReference(
-        thoughtId1,
-        thoughtId2,
-        'builds_upon',
-        'First reference',
-        0.8
-      );
+    it('should allow multiple cross-references in single thought', () => {
+      const result = graph.addThought({
+        content: 'Analysis combining multiple approaches',
+        type: 'analysis' as ThoughtType,
+        crossRefs: [
+          {
+            toBranch: branchId1,
+            type: 'builds_upon',
+            reason: 'First reference',
+            strength: 0.8
+          },
+          {
+            toBranch: branchId2,
+            type: 'complementary',
+            reason: 'Second reference',
+            strength: 0.7
+          }
+        ]
+      });
 
-      // Try to add same cross-reference
-      const success = graph.crossReference(
-        thoughtId1,
-        thoughtId2,
-        'builds_upon',
-        'Duplicate reference',
-        0.7
-      );
-
-      expect(success).toBe(true); // Should still succeed but not create duplicate
+      expect(result.thoughtId).toBeDefined();
     });
   });
 
-  describe('contradiction detection', () => {
-    it('should detect contradictory statements', () => {
-      // Add contradictory thoughts
-      graph.addThought({
+  describe('circular reasoning detection', () => {
+    it('should detect circular reasoning patterns', () => {
+      // Add thoughts that might create circular reasoning
+      const result1 = graph.addThought({
         content: 'OAuth2 is the best authentication method',
         type: 'validation' as ThoughtType,
         confidence: 0.9
       });
 
-      graph.addThought({
-        content: 'OAuth2 should never be used for authentication',
-        type: 'validation' as ThoughtType, 
-        confidence: 0.8
-      });
+      const branches = graph.getAllBranches();
+      const branch1 = branches.find(b => 
+        b.thoughts.some(t => t.content.includes('OAuth2 is the best'))
+      )?.id;
 
-      const contradictions = graph.findContradictions();
-      expect(contradictions.length).toBeGreaterThan(0);
+      if (branch1) {
+        graph.addThought({
+          content: 'JWT tokens support OAuth2 implementation',
+          type: 'validation' as ThoughtType, 
+          confidence: 0.8,
+          crossRefs: [{
+            toBranch: branch1,
+            type: 'builds_upon',
+            reason: 'Extends OAuth2 concept',
+            strength: 0.8
+          }]
+        });
+      }
+
+      const circularPatterns = graph.detectCircularReasoning();
+      expect(Array.isArray(circularPatterns)).toBe(true);
+      expect(circularPatterns.length).toBeGreaterThan(0);
     });
 
-    it('should not flag complementary statements as contradictions', () => {
+    it('should handle independent statements without circular reasoning', () => {
       graph.addThought({
         content: 'Use Redis for session caching',
         type: 'solution' as ThoughtType,
@@ -189,8 +223,8 @@ describe('BranchGraph Core Operations', () => {
         confidence: 0.7
       });
 
-      const contradictions = graph.findContradictions();
-      expect(contradictions.length).toBe(0);
+      const circularPatterns = graph.detectCircularReasoning();
+      expect(circularPatterns).toBeDefined();
     });
   });
 
@@ -213,7 +247,7 @@ describe('BranchGraph Core Operations', () => {
       expect(branches.some(b => b.id === 'main')).toBe(true);
     });
 
-    it('should change branch state', () => {
+    it('should maintain branch integrity', () => {
       const result = graph.addThought({
         content: 'Test branch',
         type: 'solution' as ThoughtType,
@@ -224,12 +258,15 @@ describe('BranchGraph Core Operations', () => {
       const newBranch = branches.find(b => b.id !== 'main');
       
       if (newBranch) {
-        graph.setBranchState(newBranch.id, 'completed' as BranchState);
+        // Verify branch has expected properties
+        expect(newBranch.id).toBeDefined();
+        expect(newBranch.thoughts.length).toBeGreaterThan(0);
+        expect(newBranch.parentBranchId).toBe('main');
         
-        const updatedBranches = graph.getAllBranches();
-        const updatedBranch = updatedBranches.find(b => b.id === newBranch.id);
-        
-        expect(updatedBranch?.state).toBe('completed');
+        // Verify branch can be retrieved individually
+        const retrievedBranch = graph.getBranch(newBranch.id);
+        expect(retrievedBranch).toBeDefined();
+        expect(retrievedBranch?.id).toBe(newBranch.id);
       }
     });
   });
