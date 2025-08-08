@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // CRITICAL: Suppress ALL stdout output before ANY imports to prevent MCP protocol corruption
 // This MUST be the first code that runs
 

@@ -1,5 +1,6 @@
-import { ThoughtData } from '../types.js';
+import { ThoughtData, BranchState } from '../types.js';
 import { BranchGraphStorage } from './BranchGraphStorage.js';
+import { BranchGraphValidator } from '../BranchGraphValidator.js';
 
 /**
  * Search functionality for BranchGraph
@@ -68,6 +69,9 @@ export class BranchGraphSearch {
    * Find thoughts by type
    */
   findThoughtsByType(type: string): ThoughtData[] {
+    // Validate type parameter
+    BranchGraphValidator.validateType(type);
+    
     const results: ThoughtData[] = [];
     
     this.storage.getAllBranches().forEach(branch => {
@@ -85,6 +89,10 @@ export class BranchGraphSearch {
    * Find thoughts within confidence range
    */
   findThoughtsByConfidence(minConfidence: number, maxConfidence: number): ThoughtData[] {
+    // Validate confidence range parameters
+    BranchGraphValidator.validateConfidence(minConfidence);
+    BranchGraphValidator.validateConfidence(maxConfidence);
+    
     const results: ThoughtData[] = [];
     
     this.storage.getAllBranches().forEach(branch => {
@@ -103,8 +111,11 @@ export class BranchGraphSearch {
    * Find branches by state
    */
   findBranchesByState(state: string): string[] {
+    // Validate branch state parameter
+    const validatedState = BranchGraphValidator.validateBranchState(state);
+    
     return this.storage.getAllBranches()
-      .filter(branch => branch.state === state)
+      .filter(branch => branch.state === validatedState)
       .map(branch => branch.id);
   }
   
