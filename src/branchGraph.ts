@@ -19,6 +19,7 @@ import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
 import { BranchGraphValidator, ValidatedThoughtInput } from './BranchGraphValidator.js';
+import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
 
 export interface AddThoughtParams {
   content: string;
@@ -58,6 +59,15 @@ export class BranchGraph {
   private branchCounter = 0;
   private eventCounter = 0;
   
+  // Validation constants
+  private static readonly MIN_CONTENT_LENGTH = 1;
+  private static readonly MAX_CONTENT_LENGTH = 10000;
+  private static readonly MIN_CONFIDENCE = 0.0;
+  private static readonly MAX_CONFIDENCE = 1.0;
+  private static readonly MAX_STRENGTH = 1.0;
+  private static readonly MIN_STRENGTH = 0.0;
+  private static readonly MAX_BRANCH_ID_LENGTH = 100;
+  
   constructor() {
     // Initialize components
     this.storage = new BranchGraphStorage();
@@ -68,6 +78,9 @@ export class BranchGraph {
     this.contradictionFilter = new ContradictionBloomFilter();
     this.similarityMatrix = new SimilarityMatrix(getConfig().matrix.similarityThreshold);
     this.circularDetector = new CircularReasoningDetector();
+    
+    // Initialize main branch
+    this.createBranchWithId('main');
   }
 
   /**
@@ -260,6 +273,12 @@ export class BranchGraph {
    * Create a new branch
    */
   createBranch(parentBranchId?: string): string {
+    // Validate parent branch exists if provided
+    if (parentBranchId !== undefined) {
+      BranchGraphValidator.validateBranchId(parentBranchId);
+      BranchGraphValidator.validateBranchExists(parentBranchId, (id) => this.storage.getBranch(id));
+    }
+    
     const branchId = `branch-${++this.branchCounter}`;
     this.createBranchWithId(branchId, parentBranchId);
     return branchId;
@@ -271,6 +290,11 @@ export class BranchGraph {
   createBranchWithId(branchId: string, parentBranchId?: string): void {
     // Validate branch ID format
     BranchGraphValidator.validateBranchId(branchId);
+    
+    // Check if branch already exists (preserve from main)
+    if (this.storage.hasBranch(branchId)) {
+      return; // Silently skip if branch already exists
+    }
     
     // Validate parent branch exists if specified
     if (parentBranchId) {
@@ -331,7 +355,7 @@ export class BranchGraph {
   }
 
   getRecentThoughts(branchId: string, count: number): ThoughtData[] {
-    // Validate parameters
+    // Validate parameters using centralized validator
     BranchGraphValidator.validateBranchId(branchId);
     BranchGraphValidator.validateCount(count);
     BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
@@ -341,7 +365,7 @@ export class BranchGraph {
 
   // Search methods
   breadthFirstSearch(startBranchId: string, maxDepth: number): Set<string> {
-    // Validate search parameters
+    // Validate search parameters using centralized validator
     BranchGraphValidator.validateBranchId(startBranchId);
     BranchGraphValidator.validateMaxDepth(maxDepth);
     BranchGraphValidator.validateBranchExists(startBranchId, (id) => this.storage.getBranch(id));
@@ -350,7 +374,7 @@ export class BranchGraph {
   }
 
   searchThoughts(pattern: RegExp): { thoughtId: string; branchId: string }[] {
-    // Validate search pattern
+    // Validate search pattern using centralized validator
     BranchGraphValidator.validateSearchPattern(pattern);
     
     return this.search.searchThoughts(pattern);
@@ -368,7 +392,7 @@ export class BranchGraph {
 
   // Phase 4 methods
   calculateSimilarity(thoughtId1: string, thoughtId2: string): number {
-    // Validate thought IDs
+    // Validate thought IDs using centralized validator
     BranchGraphValidator.validateThoughtId(thoughtId1);
     BranchGraphValidator.validateThoughtId(thoughtId2);
     
@@ -395,7 +419,7 @@ export class BranchGraph {
   }
 
   getMostSimilarThoughts(thoughtId: string, topK: number = 5): { thoughtId: string; similarity: number }[] {
-    // Validate parameters
+    // Validate parameters using centralized validator
     BranchGraphValidator.validateThoughtId(thoughtId);
     BranchGraphValidator.validateCount(topK);
     
@@ -407,7 +431,7 @@ export class BranchGraph {
   }
 
   getThoughtClusters(minSimilarity: number = getConfig().matrix.clusteringMinSimilarity): string[][] {
-    // Validate similarity threshold
+    // Validate similarity threshold using centralized validator
     BranchGraphValidator.validateSimilarityThreshold(minSimilarity);
     
     return this.similarityMatrix.getClusters(minSimilarity);
@@ -415,6 +439,10 @@ export class BranchGraph {
 
   // Legacy compatibility
   toLegacyBranch(branchId: string): any {
+    // Validate branch ID using centralized validator
+    BranchGraphValidator.validateBranchId(branchId);
+    BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
+    
     return this.storage.toLegacyBranch(branchId);
   }
 
@@ -433,10 +461,16 @@ export class BranchGraph {
 
   // Export methods
   *getThoughtBatches(batchSize: number): Generator<ThoughtData[]> {
+    // Validate batch size using centralized validator
+    BranchGraphValidator.validateCount(batchSize);
+    
     yield* this.storage.getThoughtBatches(batchSize);
   }
 
   *getBranchBatches(batchSize: number): Generator<BranchNode[]> {
+    // Validate batch size using centralized validator
+    BranchGraphValidator.validateCount(batchSize);
+    
     yield* this.storage.getBranchBatches(batchSize);
   }
 }
