@@ -286,10 +286,10 @@ describe('BranchGraph Input Validation and Error Handling', () => {
       
       expect(result.thoughtId).toBeDefined();
     });
-
-    it('should handle edge cases in similarity calculation gracefully', () => {
-      // This tests the analytics error handling with edge cases
-      const analytics = (graph as any).analytics;
+it('should handle edge cases in similarity calculation gracefully', () => {
+  // Create a separate analytics instance for direct testing
+  const analytics = new BranchGraphAnalytics(graph['storage']);
+  
       
       // Empty strings should return 1.0 (identical)
       expect(analytics.computeCosineSimilarity('', '')).toBe(1.0);
