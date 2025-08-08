@@ -35,11 +35,11 @@ process.stdout.write = function(chunk: any, encoding?: any, callback?: any): boo
 } as any;
 
 // Redirect ALL console methods to stderr or silence them
-console.log = () => {};
-console.info = () => {};
-console.warn = () => {};
-console.debug = () => {};
-console.error = (...args: any[]) => {
+console.log = (): void => {};
+console.info = (): void => {};
+console.warn = (): void => {};
+console.debug = (): void => {};
+console.error = (...args: any[]): void => {
   // Only log actual errors to stderr for debugging
   if (args.some(arg => arg instanceof Error)) {
     process.stderr.write(`[ERROR] ${args.join(' ')}\n`);
