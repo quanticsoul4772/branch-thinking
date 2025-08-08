@@ -537,7 +537,7 @@ export class BranchGraphValidator {
       );
     }
 
-    const maxAllowedDepth = getConfig().matrix?.initialSize || 1000;
+    const maxAllowedDepth = getConfig().validation?.maxTraversalDepth || 1000;
     if (depth > maxAllowedDepth) {
       throw new ValidationError(
         `Max depth cannot exceed ${maxAllowedDepth}`,
