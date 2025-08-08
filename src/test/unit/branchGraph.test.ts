@@ -10,7 +10,7 @@ describe('BranchGraph Core Operations', () => {
   });
 
   describe('addThought', () => {
-    it('should add a thought to main branch', () => {
+    it('should add a thought to main branch', async () => {
       const params: AddThoughtParams = {
         content: 'Test thought',
         type: 'analysis' as ThoughtType,
@@ -18,13 +18,13 @@ describe('BranchGraph Core Operations', () => {
         keyPoints: ['testing', 'unit-tests']
       };
 
-      const result = graph.addThought(params);
+      const result = await graph.addThought(params);
 
       expect(result.thoughtId).toBeDefined();
       expect(result.thoughtId.length).toBeGreaterThan(0);
     });
 
-    it('should create new branch with parentBranchId', () => {
+    it('should create new branch with parentBranchId', async () => {
       const params: AddThoughtParams = {
         content: 'Branch thought',
         type: 'hypothesis' as ThoughtType,
@@ -32,7 +32,7 @@ describe('BranchGraph Core Operations', () => {
         confidence: 0.7
       };
 
-      const result = graph.addThought(params);
+      const result = await graph.addThought(params);
 
       expect(result.thoughtId).toBeDefined();
       
@@ -41,14 +41,14 @@ describe('BranchGraph Core Operations', () => {
       expect(branches.length).toBeGreaterThan(1);
     });
 
-    it('should detect content overlap and suggest existing branch', () => {
+    it('should detect content overlap and suggest existing branch', async () => {
       // Add first thought
       const params1: AddThoughtParams = {
         content: 'Implementing OAuth2 authentication system',
         type: 'solution' as ThoughtType,
         confidence: 0.9
       };
-      graph.addThought(params1);
+      await graph.addThought(params1);
 
       // Add very similar thought
       const params2: AddThoughtParams = {
@@ -57,7 +57,7 @@ describe('BranchGraph Core Operations', () => {
         confidence: 0.8
       };
       
-      const result = graph.addThought(params2);
+      const result = await graph.addThought(params2);
 
       expect(result.overlapWarning).toBeDefined();
       if (result.overlapWarning) {
@@ -65,14 +65,14 @@ describe('BranchGraph Core Operations', () => {
       }
     });
 
-    it('should handle cross-references correctly', () => {
+    it('should handle cross-references correctly', async () => {
       // Create base thought
       const params1: AddThoughtParams = {
         content: 'Database layer implementation',
         type: 'solution' as ThoughtType,
         confidence: 0.8
       };
-      const result1 = graph.addThought(params1);
+      const result1 = await graph.addThought(params1);
 
       // Create thought with cross-reference
       const params2: AddThoughtParams = {
@@ -87,7 +87,7 @@ describe('BranchGraph Core Operations', () => {
         }]
       };
 
-      const result2 = graph.addThought(params2);
+      const result2 = await graph.addThought(params2);
       expect(result2.thoughtId).toBeDefined();
     });
   });
@@ -97,8 +97,8 @@ describe('BranchGraph Core Operations', () => {
     let branchId1: string;
     let branchId2: string;
 
-    beforeEach(() => {
-      const result1 = graph.addThought({
+    beforeEach(async () => {
+      const result1 = await graph.addThought({
         content: 'First thought',
         type: 'analysis' as ThoughtType,
         parentBranchId: 'main'
@@ -111,7 +111,7 @@ describe('BranchGraph Core Operations', () => {
         b.thoughts.some(t => t.content === 'First thought')
       )?.id || 'main';
       
-      const result2 = graph.addThought({
+      const result2 = await graph.addThought({
         content: 'Second thought', 
         type: 'hypothesis' as ThoughtType,
         parentBranchId: 'main'
@@ -122,8 +122,8 @@ describe('BranchGraph Core Operations', () => {
       )?.id || 'main';
     });
 
-    it('should create cross-reference via addThought', () => {
-      const result = graph.addThought({
+    it('should create cross-reference via addThought', async () => {
+      const result = await graph.addThought({
         content: 'Cross-referenced thought',
         type: 'validation' as ThoughtType,
         branchId: branchId1,
@@ -138,8 +138,8 @@ describe('BranchGraph Core Operations', () => {
       expect(result.thoughtId).toBeDefined();
     });
 
-    it('should handle cross-reference with valid branch IDs', () => {
-      const result = graph.addThought({
+    it('should handle cross-reference with valid branch IDs', async () => {
+      const result = await graph.addThought({
         content: 'Building upon previous work',
         type: 'solution' as ThoughtType,
         crossRefs: [{
@@ -153,8 +153,8 @@ describe('BranchGraph Core Operations', () => {
       expect(result.thoughtId).toBeDefined();
     });
 
-    it('should allow multiple cross-references in single thought', () => {
-      const result = graph.addThought({
+    it('should allow multiple cross-references in single thought', async () => {
+      const result = await graph.addThought({
         content: 'Analysis combining multiple approaches',
         type: 'analysis' as ThoughtType,
         crossRefs: [
@@ -178,9 +178,9 @@ describe('BranchGraph Core Operations', () => {
   });
 
   describe('circular reasoning detection', () => {
-    it('should detect circular reasoning patterns', () => {
+    it('should detect circular reasoning patterns', async () => {
       // Add thoughts that might create circular reasoning
-      const result1 = graph.addThought({
+      const result1 = await graph.addThought({
         content: 'OAuth2 is the best authentication method',
         type: 'validation' as ThoughtType,
         confidence: 0.9
@@ -192,7 +192,7 @@ describe('BranchGraph Core Operations', () => {
       )?.id;
 
       if (branch1) {
-        graph.addThought({
+        await graph.addThought({
           content: 'JWT tokens support OAuth2 implementation',
           type: 'validation' as ThoughtType, 
           confidence: 0.8,
@@ -210,14 +210,14 @@ describe('BranchGraph Core Operations', () => {
       expect(circularPatterns.length).toBeGreaterThan(0);
     });
 
-    it('should handle independent statements without circular reasoning', () => {
-      graph.addThought({
+    it('should handle independent statements without circular reasoning', async () => {
+      await graph.addThought({
         content: 'Use Redis for session caching',
         type: 'solution' as ThoughtType,
         confidence: 0.8
       });
 
-      graph.addThought({
+      await graph.addThought({
         content: 'Use Memcached for query result caching',
         type: 'solution' as ThoughtType,
         confidence: 0.7
@@ -229,14 +229,14 @@ describe('BranchGraph Core Operations', () => {
   });
 
   describe('branch management', () => {
-    it('should list all branches', () => {
+    it('should list all branches', async () => {
       // Add thoughts to create branches
-      graph.addThought({
+      await graph.addThought({
         content: 'Main branch thought',
         type: 'analysis' as ThoughtType
       });
 
-      graph.addThought({
+      await graph.addThought({
         content: 'New branch thought',
         type: 'hypothesis' as ThoughtType,
         parentBranchId: 'main'
@@ -247,8 +247,8 @@ describe('BranchGraph Core Operations', () => {
       expect(branches.some(b => b.id === 'main')).toBe(true);
     });
 
-    it('should maintain branch integrity', () => {
-      const result = graph.addThought({
+    it('should maintain branch integrity', async () => {
+      const result = await graph.addThought({
         content: 'Test branch',
         type: 'solution' as ThoughtType,
         parentBranchId: 'main'
