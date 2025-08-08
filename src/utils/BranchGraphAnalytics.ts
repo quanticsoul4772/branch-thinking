@@ -2,6 +2,11 @@ import { BranchNode, ThoughtData } from '../types.js';
 import { BranchGraphStorage } from './BranchGraphStorage.js';
 import { semanticProfileManager } from '../semanticProfile.js';
 import { getConfig } from '../config.js';
+import {
+  ValidationError,
+  SemanticAnalysisError,
+  ErrorHandler
+} from './customErrors.js';
 
 /**
  * Analytics functionality for BranchGraph
@@ -43,13 +48,39 @@ export class BranchGraphAnalytics {
    * Compute cosine similarity between two texts
    */
   computeCosineSimilarity(text1: string, text2: string): number {
-    const words1 = new Set(text1.toLowerCase().split(/\s+/));
-    const words2 = new Set(text2.toLowerCase().split(/\s+/));
-    
-    const intersection = new Set([...words1].filter(x => words2.has(x)));
-    const union = new Set([...words1, ...words2]);
-    
-    return union.size > 0 ? intersection.size / Math.sqrt(words1.size * words2.size) : 0;
+    try {
+      if (typeof text1 !== 'string') {
+        throw new ValidationError('First text parameter must be a string', 'text1', { actualType: typeof text1 });
+      }
+      if (typeof text2 !== 'string') {
+        throw new ValidationError('Second text parameter must be a string', 'text2', { actualType: typeof text2 });
+      }
+      
+      if (text1.length === 0 && text2.length === 0) {
+        return 1.0; // Two empty strings are identical
+      }
+      
+      if (text1.length === 0 || text2.length === 0) {
+        return 0.0; // One empty string means no similarity
+      }
+      
+      const words1 = new Set(text1.toLowerCase().split(/\s+/).filter(w => w.length > 0));
+      const words2 = new Set(text2.toLowerCase().split(/\s+/).filter(w => w.length > 0));
+      
+      if (words1.size === 0 && words2.size === 0) {
+        return 1.0; // Both texts have no meaningful words
+      }
+      
+      if (words1.size === 0 || words2.size === 0) {
+        return 0.0; // One text has no meaningful words
+      }
+      
+      const intersection = new Set([...words1].filter(x => words2.has(x)));
+      
+      return intersection.size / Math.sqrt(words1.size * words2.size);
+    } catch (error) {
+      throw ErrorHandler.handle(error);
+    }
   }
   
   /**
