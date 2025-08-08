@@ -4,12 +4,11 @@ import {
   BranchNode, 
   ThoughtEvent, 
   BranchingThoughtInput,
-  CrossReference,
   CrossRefType
 } from './types.js';
 import { ContradictionBloomFilter } from './bloomFilter.js';
 import { SimilarityMatrix } from './sparseMatrix.js';
-import { CircularReasoningDetector } from './circularReasoningDetector.js';
+import { CircularReasoningDetector, CircularPattern } from './circularReasoningDetector.js';
 import { getConfig } from './config.js';
 import { semanticProfileManager } from './semanticProfile.js';
 import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
@@ -41,6 +40,58 @@ export interface AddThoughtResult {
     currentSimilarity: number;
     suggestedSimilarity: number;
   };
+}
+
+// Interfaces for return types to fix ESLint any violations
+export interface LegacyBranch {
+  id: string;
+  state: string;
+  priority: number;
+  confidence: number;
+  thoughts: ThoughtData[];
+  insights: Array<{
+    id: string;
+    type: string;
+    content: string;
+    timestamp: string;
+  }>;
+  crossRefs: Array<{
+    toBranch: string;
+    type: CrossRefType;
+    reason: string;
+    strength: number;
+    thoughtId?: string;
+  }>;
+  parentBranchId: string | null;
+}
+
+export interface ProfileComparison {
+  branchComparisons: Array<{
+    branch1: string;
+    branch2: string;
+    similarity: number;
+    sharedConcepts: string[];
+  }>;
+  mostSimilarPairs: Array<{ branches: string[]; similarity: number }>;
+  mostDistinctBranches: string[];
+}
+
+export interface MergeSuggestions {
+  suggestions: Array<{
+    branches: string[];
+    reason: string;
+    similarity: number;
+    potentialBenefit: string;
+  }>;
+}
+
+export interface DriftDetection {
+  driftingBranches: Array<{
+    branchId: string;
+    driftScore: number;
+    reason: string;
+    recommendation: string;
+  }>;
 }
 
 export class BranchGraph {
@@ -427,7 +478,7 @@ export class BranchGraph {
     return this.similarityMatrix.getMostSimilar(thoughtId, topK);
   }
 
-  detectCircularReasoning(): any {
+  detectCircularReasoning(): CircularPattern[] {
     return this.circularDetector.detectAllPatterns();
   }
 
@@ -439,7 +490,7 @@ export class BranchGraph {
   }
 
   // Legacy compatibility
-  toLegacyBranch(branchId: string): any {
+  toLegacyBranch(branchId: string): LegacyBranch | null {
     // Validate branch ID using centralized validator
     BranchGraphValidator.validateBranchId(branchId);
     BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
@@ -448,15 +499,15 @@ export class BranchGraph {
   }
 
   // Semantic profile methods
-  compareProfiles(): any {
+  compareProfiles(): ProfileComparison {
     return this.analytics.compareProfiles();
   }
 
-  suggestMerges(): Promise<any> {
+  suggestMerges(): Promise<MergeSuggestions> {
     return Promise.resolve(this.analytics.suggestMerges());
   }
 
-  detectDrift(): Promise<any> {
+  detectDrift(): Promise<DriftDetection> {
     return Promise.resolve(this.analytics.detectDrift());
   }
 
