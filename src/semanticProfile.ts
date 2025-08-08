@@ -184,7 +184,10 @@ export class SemanticProfileManager {
   }
 
   private updateBranchEmbedding(branch: BranchNode, newEmbedding: Float32Array): void {
-    const profile = branch.semanticProfile!;
+    const profile = branch.semanticProfile;
+    if (!profile) {
+      throw new Error('Branch semantic profile not found');
+    }
     const n = profile.thoughtCount;
     
     // Calculate new average: avg_new = (avg_old * n + new_value) / (n + 1)

@@ -4,8 +4,8 @@
  * Test script for Phase 3: Semantic Profiles
  */
 
-import { BranchGraph } from './src/branchGraph.js';
-import { logger } from './utils/logger.js';
+import { BranchGraph } from '../../src/branchGraph.js';
+import { logger } from '../utils/logger.js';
 
 async function testSemanticProfiles() {
   logger.info('Testing Phase 3: Semantic Profiles\n');

@@ -76,7 +76,10 @@ export class BranchManagerAdapter {
     
     // The graph's addThought method will handle branch creation with the correct ID
     const result = await this.graph.addThought({ ...input, branchId: actualBranchId });
-    const thought = this.graph.getThought(result.thoughtId)!;
+    const thought = this.graph.getThought(result.thoughtId);
+    if (!thought) {
+      throw new Error(`Thought ${result.thoughtId} not found`);
+    }
     
     // Set as active branch
     this.activeBranchId = actualBranchId;
