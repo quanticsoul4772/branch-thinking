@@ -7,7 +7,6 @@ import {
   BranchNotFoundError, 
   ThoughtNotFoundError 
 } from '../../utils/customErrors.js';
-import { getConfig } from '../../config.js';
 
 describe('BranchGraph Input Validation and Error Handling', () => {
   let graph: BranchGraph;

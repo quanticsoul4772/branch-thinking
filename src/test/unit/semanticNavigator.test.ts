@@ -66,9 +66,11 @@ describe('SemanticNavigator', () => {
         description: `Test branch ${branchIndex + 1}`,
         thoughtIds: [],
         thoughts: [],
-        timestamp: new Date(),
-        isComplete: false,
-        metadata: {}
+        childIds: new Set<string>(),
+        state: 'active' as const,
+        priority: 1,
+        confidence: 0.8,
+        lastEvaluationIndex: 0
       };
 
       // Create thoughts for this branch
@@ -82,7 +84,7 @@ describe('SemanticNavigator', () => {
           metadata: {
             type: 'reasoning',
             confidence: 0.7 + (thoughtIndex * 0.05),
-            tags: [`${config.id}`, `thought-${thoughtIndex}`]
+            keyPoints: [`${config.id}`, `thought-${thoughtIndex}`]
           }
         };
 
@@ -143,9 +145,11 @@ describe('SemanticNavigator', () => {
         description: 'Empty branch',
         thoughtIds: [],
         thoughts: [],
-        timestamp: new Date(),
-        isComplete: false,
-        metadata: {}
+        childIds: new Set<string>(),
+        state: 'active' as const,
+        priority: 1,
+        confidence: 0.8,
+        lastEvaluationIndex: 0
       };
 
       testBranches.push(emptyBranch);
@@ -228,7 +232,7 @@ describe('SemanticNavigator', () => {
         content: 'Single thought',
         branchId: 'single-branch',
         timestamp: new Date(),
-        metadata: { type: 'reasoning', confidence: 0.8, tags: [] }
+        metadata: { type: 'reasoning', confidence: 0.8, keyPoints: [] }
       };
 
       const singleBranch: BranchNode = {
@@ -237,9 +241,11 @@ describe('SemanticNavigator', () => {
         description: 'Single thought branch',
         thoughtIds: ['single-thought'],
         thoughts: [singleThought],
-        timestamp: new Date(),
-        isComplete: false,
-        metadata: {}
+        childIds: new Set<string>(),
+        state: 'active' as const,
+        priority: 1,
+        confidence: 0.8,
+        lastEvaluationIndex: 0
       };
 
       graph.getBranch = (id: string) => {
