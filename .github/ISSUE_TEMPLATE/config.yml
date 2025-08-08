@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🤔 Questions & Discussions
+    url: https://github.com/quanticsoul4772/branch-thinking/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📖 Documentation
+    url: https://github.com/quanticsoul4772/branch-thinking/blob/main/README.md
+    about: Check the documentation for setup and usage information
+  - name: 🔧 Troubleshooting
+    url: https://github.com/quanticsoul4772/branch-thinking/wiki/Troubleshooting
+    about: Common issues and solutions
