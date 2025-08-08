@@ -657,8 +657,8 @@ export class BranchGraphValidator {
 
     // Validate hex string format for content hash
     const hashLength = getConfig().hash?.substringLength || 16;
-    const hexPattern = new RegExp(`^[a-f0-9]{${hashLength}}$`);
-    
+    const hexPattern = new RegExp(`^[a-fA-F0-9]{${hashLength}}$`);
+
     if (!hexPattern.test(thoughtId)) {
       throw new ValidationError(
         `Thought ID must be a ${hashLength}-character hexadecimal string`,
