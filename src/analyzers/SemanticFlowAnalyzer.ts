@@ -69,13 +69,16 @@ export class SemanticFlowAnalyzer {
     const thoughtData = thoughts.map(t => ({ id: t.id, content: t.content }));
     const embeddingMap = await this.embeddingManager.getEmbeddings(thoughtData);
     
-    return thoughts.map(t => {
+    const embeddings: Float32Array[] = [];
+    for (const t of thoughts) {
       const embedding = embeddingMap.get(t.id);
       if (!embedding) {
-        throw new Error(`Embedding not found for thought ${t.id}`);
+        // Skip thoughts without embeddings to allow partial analysis
+        continue;
       }
-      return embedding;
-    });
+      embeddings.push(embedding);
+    }
+    return embeddings;
   }
 
   /**
