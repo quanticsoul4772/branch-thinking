@@ -74,6 +74,8 @@ body:
       label: Branch Thinking Version
       description: What version of branch-thinking are you using?
       placeholder: e.g., 1.7.1
+    validations:
+      required: true
 
   - type: textarea
     id: mcp-config
