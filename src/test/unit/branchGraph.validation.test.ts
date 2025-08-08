@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BranchGraph } from '../../branchGraph.js';
+import { BranchGraphAnalytics } from '../../utils/BranchGraphAnalytics.js';
+import { getConfig } from '../../config.js';
 import { 
   ValidationError, 
   BranchNotFoundError, 
