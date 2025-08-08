@@ -3,7 +3,7 @@ import { getConfig } from '../config.js';
 
 export class PruneCommand extends Command {
   async execute(data: CommandData): Promise<CommandResult> {
-    const threshold = (data.data && data.data.threshold) || getConfig().branch.pruneThreshold;
+    const threshold = data.data?.threshold || getConfig().branch.pruneThreshold;
     
     try {
       const result = await this.branchManager.pruneLowScoringBranches(threshold);
