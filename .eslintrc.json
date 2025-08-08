@@ -3,6 +3,10 @@
     "es2021": true,
     "node": true
   },
+  "globals": {
+    "process": "readonly",
+    "console": "readonly"
+  },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"

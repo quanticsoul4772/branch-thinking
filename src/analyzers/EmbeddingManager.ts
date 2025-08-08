@@ -10,7 +10,7 @@ export class EmbeddingManager {
   /**
    * Get embedding for a thought, using cache if available
    */
-  async getEmbedding(thoughtId: string, content: string): Promise<Float32Array> {
+  getEmbedding(thoughtId: string, content: string): Promise<Float32Array> {
     // Try cache first
     const cached = semanticProfileManager.getCachedEmbedding(thoughtId);
     if (cached) {
