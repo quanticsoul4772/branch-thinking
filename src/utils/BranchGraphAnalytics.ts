@@ -49,8 +49,11 @@ export class BranchGraphAnalytics {
    */
   computeCosineSimilarity(text1: string, text2: string): number {
     try {
-      if (typeof text1 !== 'string' || typeof text2 !== 'string') {
-        throw new ValidationError('Both texts must be strings', 'text', { text1: typeof text1, text2: typeof text2 });
+      if (typeof text1 !== 'string') {
+        throw new ValidationError('First text parameter must be a string', 'text1', { actualType: typeof text1 });
+      }
+      if (typeof text2 !== 'string') {
+        throw new ValidationError('Second text parameter must be a string', 'text2', { actualType: typeof text2 });
       }
       
       if (text1.length === 0 && text2.length === 0) {
