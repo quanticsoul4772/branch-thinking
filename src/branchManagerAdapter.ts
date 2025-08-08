@@ -44,7 +44,7 @@ export interface BranchStatus {
 }
 
 export interface BranchHistoryData {
-  branch: any;
+  branch: ThoughtBranch;
   thoughts: ThoughtData[];
 }
 
