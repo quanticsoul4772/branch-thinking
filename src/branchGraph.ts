@@ -565,8 +565,9 @@ export class BranchGraph {
       throw new Error('CrossRefs must be an array');
     }
     
+    // Allow empty crossRefs arrays - they represent no cross-references
     if (crossRefs.length === 0) {
-      throw new Error('CrossRefs array cannot be empty when provided');
+      return; // Early return for empty arrays
     }
     
     for (let i = 0; i < crossRefs.length; i++) {
