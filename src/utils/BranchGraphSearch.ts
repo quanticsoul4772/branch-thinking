@@ -19,7 +19,11 @@ export class BranchGraphSearch {
     ];
     
     while (queue.length > 0) {
-      const { branchId, depth } = queue.shift()!;
+      const current = queue.shift();
+      if (!current) {
+        break;
+      }
+      const { branchId, depth } = current;
       
       if (depth > maxDepth || visited.has(branchId)) {
         continue;

@@ -121,8 +121,9 @@ export class SimilarityMatrix {
    * Register a new thought
    */
   registerThought(thoughtId: string): number {
-    if (this.thoughtIds.has(thoughtId)) {
-      return this.thoughtIds.get(thoughtId)!;
+    const existingIndex = this.thoughtIds.get(thoughtId);
+    if (existingIndex !== undefined) {
+      return existingIndex;
     }
 
     const index = this.nextIndex++;

@@ -414,7 +414,10 @@ export class SemanticNavigator {
     visited.add(nextNode.thoughtId);
     
     // Get embedding for next iteration
-    const nextThought = graph.getThought(nextNode.thoughtId)!;
+    const nextThought = graph.getThought(nextNode.thoughtId);
+    if (!nextThought) {
+      throw new Error(`Thought ${nextNode.thoughtId} not found`);
+    }
     const nextEmbedding = await this.getThoughtEmbedding(nextThought);
     
     return {

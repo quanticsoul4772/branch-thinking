@@ -156,7 +156,10 @@ class BranchingThoughtServer {
 
       const thoughtInput = this.createThoughtInput(inputData);
       const result = await this.branchManager.addThought(thoughtInput);
-      const branch = this.branchManager.getBranch(result.thought.branchId)!;
+      const branch = this.branchManager.getBranch(result.thought.branchId);
+      if (!branch) {
+        throw new Error(`Branch ${result.thought.branchId} not found`);
+      }
       const response = this.createResponse(result, branch);
 
       return {

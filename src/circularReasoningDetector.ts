@@ -290,8 +290,12 @@ export class CircularReasoningDetector {
    * Check for reciprocal premise-conclusion relationship
    */
   private checkReciprocalRelationship(thought1: string, thought2: string): CircularPattern | null {
-    const content1 = this.thoughtContent.get(thought1)!;
-    const content2 = this.thoughtContent.get(thought2)!;
+    const content1 = this.thoughtContent.get(thought1);
+    const content2 = this.thoughtContent.get(thought2);
+    
+    if (!content1 || !content2) {
+      return null;
+    }
     
     const { conclusions: conclusions1 } = this.extractLogicalComponents(content1);
     const { premises: premises2 } = this.extractLogicalComponents(content2);
@@ -489,7 +493,10 @@ export class CircularReasoningDetector {
     const visited = new Set<string>();
 
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) {
+        break;
+      }
       
       const pathFound = this.checkPathFound(current, end);
       if (pathFound) {

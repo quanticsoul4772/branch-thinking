@@ -67,8 +67,9 @@ export class SemanticSimilarityService {
     
     // Check cache first
     const cacheKey = this.getCacheKey(text);
-    if (this.embeddings.has(cacheKey)) {
-      return this.embeddings.get(cacheKey)!;
+    const cachedEmbedding = this.embeddings.get(cacheKey);
+    if (cachedEmbedding) {
+      return cachedEmbedding;
     }
     
     try {
