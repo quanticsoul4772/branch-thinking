@@ -69,7 +69,16 @@ export class SemanticFlowAnalyzer {
     const thoughtData = thoughts.map(t => ({ id: t.id, content: t.content }));
     const embeddingMap = await this.embeddingManager.getEmbeddings(thoughtData);
     
-    return thoughts.map(t => embeddingMap.get(t.id)!);
+    const embeddings: Float32Array[] = [];
+    for (const t of thoughts) {
+      const embedding = embeddingMap.get(t.id);
+      if (!embedding) {
+        // Skip thoughts without embeddings to allow partial analysis
+        continue;
+      }
+      embeddings.push(embedding);
+    }
+    return embeddings;
   }
 
   /**
@@ -83,9 +92,16 @@ export class SemanticFlowAnalyzer {
     const driftPoints: DriftPoint[] = [];
 
     for (let i = 1; i < embeddings.length; i++) {
+      const prevEmbedding = embeddings[i - 1];
+      const currEmbedding = embeddings[i];
+      
+      if (!prevEmbedding || !currEmbedding) {
+        throw new Error(`Missing embedding at index ${i - 1} or ${i}`);
+      }
+      
       const similarity = this.embeddingManager.calculateSimilarity(
-        embeddings[i - 1],
-        embeddings[i]
+        prevEmbedding,
+        currEmbedding
       );
       
       totalContinuity += similarity;
@@ -141,9 +157,16 @@ export class SemanticFlowAnalyzer {
    * Check if current thought starts a new cluster
    */
   private isNewCluster(embeddings: Float32Array[], clusterStart: number, currentIndex: number): boolean {
+    const clusterStartEmbedding = embeddings[clusterStart];
+    const currentEmbedding = embeddings[currentIndex];
+    
+    if (!clusterStartEmbedding || !currentEmbedding) {
+      throw new Error(`Missing embedding at index ${clusterStart} or ${currentIndex}`);
+    }
+    
     const similarity = this.embeddingManager.calculateSimilarity(
-      embeddings[clusterStart],
-      embeddings[currentIndex]
+      clusterStartEmbedding,
+      currentEmbedding
     );
     return similarity < 0.6;
   }

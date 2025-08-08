@@ -131,8 +131,8 @@ export class BranchGraph {
       content: params.content,
       branchId: actualBranchId,
       type: params.type,
-      confidence: params.confidence!,
-      keyPoints: params.keyPoints!
+      confidence: params.confidence ?? getConfig().branch.defaultConfidence,
+      keyPoints: params.keyPoints ?? []
     });
     
     this.storage.addThoughtToBranch(thoughtId, actualBranchId);

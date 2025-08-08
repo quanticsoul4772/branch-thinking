@@ -174,15 +174,21 @@ class MetricCalculator {
     let gradient = 0;
     
     for (let i = 1; i < recentConfidences.length; i++) {
-      gradient += recentConfidences[i] - recentConfidences[i-1];
+      const current = recentConfidences[i];
+      const previous = recentConfidences[i - 1];
+      
+      if (current !== undefined && previous !== undefined) {
+        gradient += current - previous;
+      }
     }
     
     return gradient / (recentConfidences.length - 1);
   }
 
   private getTerms(text: string): Set<string> {
-    if (this.termCache.has(text)) {
-      return this.termCache.get(text)!;
+    const cachedTerms = this.termCache.get(text);
+    if (cachedTerms) {
+      return cachedTerms;
     }
     
     const terms = new Set(
@@ -241,8 +247,11 @@ export class DifferentialEvaluator {
     const events = graph.getEventsSince(this.lastProcessedEvent);
     const relevantEvents = this.filterRelevantEvents(events, branchId);
     
-    if (relevantEvents.length === 0 && this.evaluationCache.has(branchId)) {
-      return this.evaluationCache.get(branchId)!;
+    if (relevantEvents.length === 0) {
+      const cachedEvaluation = this.evaluationCache.get(branchId);
+      if (cachedEvaluation) {
+        return cachedEvaluation;
+      }
     }
     
     // Process new events
