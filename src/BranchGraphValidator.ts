@@ -133,7 +133,7 @@ export class BranchGraphValidator {
     }
 
     const config = getConfig();
-    const maxLength = config.validation?.maxContentLength || config.display?.thoughtCharLimit || 10000;
+    const maxLength = config?.validation?.maxContentLength || config?.display?.thoughtCharLimit || 10000;
     
     if (trimmedContent.length > maxLength) {
       throw new ValidationError(
