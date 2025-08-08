@@ -17,7 +17,7 @@ export interface ToolInfo {
  */
 export const toolRegistry: Record<string, ToolInfo> = {
   // Reasoning Domain
-  'sequentialthinking': {
+  sequentialthinking: {
     name: 'sequentialthinking',
     domain: 'reasoning',
     description: 'Step-by-step thinking for complex problems',
@@ -33,21 +33,21 @@ export const toolRegistry: Record<string, ToolInfo> = {
   },
 
   // Code Domain
-  'analyze_code': {
+  analyze_code: {
     name: 'analyze_code',
     domain: 'code',
     description: 'Analyze code for bugs, style, security, and performance',
     keywords: ['code', 'analyze', 'bug', 'security', 'performance', 'quality'],
     patterns: [/analyze.*code/i, /code.*review/i, /find.*bugs?/i, /security.*issue/i]
   },
-  'fix_code': {
+  fix_code: {
     name: 'fix_code',
     domain: 'code',
     description: 'Automatically fix common code issues',
     keywords: ['fix', 'repair', 'correct', 'patch', 'resolve'],
     patterns: [/fix.*code/i, /repair.*issue/i, /correct.*error/i]
   },
-  'generate_docs': {
+  generate_docs: {
     name: 'generate_docs',
     domain: 'code',
     description: 'Generate documentation from source code',
@@ -56,14 +56,14 @@ export const toolRegistry: Record<string, ToolInfo> = {
   },
 
   // Memory Domain
-  'search_nodes': {
+  search_nodes: {
     name: 'search_nodes',
     domain: 'memory',
     description: 'Search knowledge graph for relevant information',
     keywords: ['search', 'find', 'lookup', 'recall', 'memory', 'previous'],
     patterns: [/search.*memory/i, /find.*previous/i, /recall.*information/i]
   },
-  'create_entities': {
+  create_entities: {
     name: 'create_entities',
     domain: 'memory',
     description: 'Store information in knowledge graph',
@@ -72,28 +72,28 @@ export const toolRegistry: Record<string, ToolInfo> = {
   },
 
   // System Domain
-  'read_file': {
+  read_file: {
     name: 'read_file',
     domain: 'system',
     description: 'Read file contents',
     keywords: ['read', 'file', 'open', 'load', 'contents'],
     patterns: [/read.*file/i, /open.*file/i, /load.*contents/i]
   },
-  'write_file': {
+  write_file: {
     name: 'write_file',
     domain: 'system',
     description: 'Write content to file',
     keywords: ['write', 'save', 'create', 'file', 'output'],
     patterns: [/write.*file/i, /save.*to.*file/i, /create.*file/i]
   },
-  'search_files': {
+  search_files: {
     name: 'search_files',
     domain: 'system',
     description: 'Search for files matching a pattern',
     keywords: ['search', 'find', 'locate', 'files', 'pattern'],
     patterns: [/search.*files?/i, /find.*files?/i, /locate.*in.*directory/i]
   },
-  'run_command': {
+  run_command: {
     name: 'run_command',
     domain: 'system',
     description: 'Execute shell commands',
@@ -102,14 +102,14 @@ export const toolRegistry: Record<string, ToolInfo> = {
   },
 
   // Research Domain
-  'web_search': {
+  web_search: {
     name: 'web_search',
     domain: 'research',
     description: 'Search the web for information',
     keywords: ['search', 'web', 'internet', 'google', 'research', 'find'],
     patterns: [/search.*web/i, /google.*search/i, /research.*online/i]
   },
-  'web_fetch': {
+  web_fetch: {
     name: 'web_fetch',
     domain: 'research',
     description: 'Fetch content from a URL',
@@ -133,10 +133,10 @@ export const toolCategories = {
  * Context-based tool recommendations
  */
 export const contextualRecommendations: Record<string, string[]> = {
-  'debugging': ['analyze_code', 'search_files', 'read_file', 'run_command'],
-  'documentation': ['generate_docs', 'read_file', 'write_file'],
-  'research': ['web_search', 'search_nodes', 'sequentialthinking'],
-  'validation': ['logic-thinking', 'analyze_code'],
-  'implementation': ['write_file', 'fix_code', 'generate_docs'],
-  'analysis': ['sequentialthinking', 'analyze_code', 'search_nodes']
+  debugging: ['analyze_code', 'search_files', 'read_file', 'run_command'],
+  documentation: ['generate_docs', 'read_file', 'write_file'],
+  research: ['web_search', 'search_nodes', 'sequentialthinking'],
+  validation: ['logic-thinking', 'analyze_code'],
+  implementation: ['write_file', 'fix_code', 'generate_docs'],
+  analysis: ['sequentialthinking', 'analyze_code', 'search_nodes']
 };

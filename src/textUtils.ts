@@ -73,7 +73,7 @@ export class TextUtils {
   /**
    * Extract n-grams from text
    */
-  static extractNGrams(text: string, n: number = 2): string[] {
+  static extractNGrams(text: string, n = 2): string[] {
     const words = text.toLowerCase()
       .split(/\s+/)
       .filter(w => w.length > 0);

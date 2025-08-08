@@ -86,7 +86,7 @@ export class SerializationHelper {
    * Format key points observation
    */
   private formatKeyPointsObservation(thought: ThoughtData): string {
-    return `KEYPOINTS[${thought.id}]: ${thought.metadata.keyPoints!.join('; ')}`;
+    return `KEYPOINTS[${thought.id}]: ${thought.metadata.keyPoints.join('; ')}`;
   }
   
   /**

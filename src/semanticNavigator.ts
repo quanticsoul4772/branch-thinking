@@ -37,7 +37,7 @@ export class SemanticNavigator {
   async findSimilar(
     graph: BranchGraph,
     query: string,
-    limit: number = 10
+    limit = 10
   ): Promise<SimilarThought[]> {
     const queryEmbedding = await semanticSimilarity.getEmbedding(query);
     
@@ -131,7 +131,7 @@ export class SemanticNavigator {
   async jumpToRelated(
     graph: BranchGraph,
     thoughtId: string,
-    limit: number = 5
+    limit = 5
   ): Promise<RelatedThought[]> {
     const thought = graph.getThought(thoughtId);
     if (!thought) {
@@ -293,7 +293,7 @@ export class SemanticNavigator {
     graph: BranchGraph,
     fromThoughtId: string,
     toThoughtId: string,
-    maxSteps: number = 5
+    maxSteps = 5
   ): Promise<SemanticPathNode[]> {
     const fromThought = graph.getThought(fromThoughtId);
     const toThought = graph.getThought(toThoughtId);
@@ -619,7 +619,7 @@ export class SemanticNavigator {
           driftPoints.push({
             index: i,
             drift,
-            thought: thought.content.substring(0, 100) + '...'
+            thought: `${thought.content.substring(0, 100)  }...`
           });
         }
       }

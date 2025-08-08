@@ -141,10 +141,10 @@ export class FormattingHelper {
     confidence: number;
   } {
     const typeMap: Record<string, 'missing_data' | 'uncertain_claim' | 'vague_reference' | 'assumed_knowledge'> = {
-      'factual': 'missing_data',
-      'technical': 'missing_data',
-      'temporal': 'uncertain_claim',
-      'causal': 'vague_reference'
+      factual: 'missing_data',
+      technical: 'missing_data',
+      temporal: 'uncertain_claim',
+      causal: 'vague_reference'
     };
     
     return {
@@ -160,7 +160,7 @@ export class FormattingHelper {
    */
   truncateContent(content: string, maxLength: number): string {
     return content.length > maxLength 
-      ? content.substring(0, maxLength) + '...' 
+      ? `${content.substring(0, maxLength)  }...` 
       : content;
   }
 }

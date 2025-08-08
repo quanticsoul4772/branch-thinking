@@ -64,13 +64,13 @@ class ContentAnalyzer {
  */
 class RelevanceScorer {
   private static readonly TYPE_ALIGNMENTS: Record<string, string[]> = {
-    'analysis': ['analyze_code', 'sequentialthinking', 'search_nodes'],
-    'hypothesis': ['logic-thinking', 'web_search', 'search_nodes'],
-    'implementation': ['write_file', 'fix_code', 'generate_docs'],
-    'validation': ['logic-thinking', 'analyze_code', 'run_command'],
-    'research': ['web_search', 'search_nodes', 'read_file'],
-    'debugging': ['analyze_code', 'search_files', 'read_file'],
-    'solution': ['fix_code', 'write_file', 'generate_docs']
+    analysis: ['analyze_code', 'sequentialthinking', 'search_nodes'],
+    hypothesis: ['logic-thinking', 'web_search', 'search_nodes'],
+    implementation: ['write_file', 'fix_code', 'generate_docs'],
+    validation: ['logic-thinking', 'analyze_code', 'run_command'],
+    research: ['web_search', 'search_nodes', 'read_file'],
+    debugging: ['analyze_code', 'search_files', 'read_file'],
+    solution: ['fix_code', 'write_file', 'generate_docs']
   };
 
   calculateScore(tool: ToolInfo, context: BranchContext): number {
@@ -191,7 +191,7 @@ export class ToolSuggester {
   /**
    * Suggest tools based on branch content
    */
-  suggestTools(branch: ThoughtBranch, maxSuggestions: number = 5): ToolSuggestion[] {
+  suggestTools(branch: ThoughtBranch, maxSuggestions = 5): ToolSuggestion[] {
     const context = this.analyzeBranch(branch);
     const suggestions = this.gatherSuggestions(context);
     this.addContextualSuggestions(suggestions, context);

@@ -68,10 +68,10 @@ export class SynthesisBuilder {
    */
   private getResolutionDescription(type: ResolutionType): string {
     const descriptions: Record<ResolutionType, string> = {
-      'integration': 'integrating partial truths from both perspectives',
-      'contextualization': 'recognizing different contexts where each view applies',
+      integration: 'integrating partial truths from both perspectives',
+      contextualization: 'recognizing different contexts where each view applies',
       'higher-order': 'transcending the contradiction through a higher-level understanding',
-      'temporal': 'resolving through temporal sequencing and evolution'
+      temporal: 'resolving through temporal sequencing and evolution'
     };
 
     return descriptions[type];
@@ -82,10 +82,10 @@ export class SynthesisBuilder {
    */
   private getBaseConfidence(type: ResolutionType): number {
     const confidences: Record<ResolutionType, number> = {
-      'integration': 0.8,
-      'contextualization': 0.85,
+      integration: 0.8,
+      contextualization: 0.85,
       'higher-order': 0.75,
-      'temporal': 0.8
+      temporal: 0.8
     };
 
     return confidences[type];

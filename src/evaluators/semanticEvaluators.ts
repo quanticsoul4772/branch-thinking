@@ -20,7 +20,7 @@ export class SemanticCoherenceEvaluator extends BaseEvaluator {
   protected evaluatorName = 'SemanticCoherenceEvaluator';
   private useSemanticSimilarity: boolean;
   
-  constructor(useSemanticSimilarity: boolean = true) {
+  constructor(useSemanticSimilarity = true) {
     super();
     this.useSemanticSimilarity = useSemanticSimilarity;
   }
@@ -81,7 +81,7 @@ export class SemanticRedundancyChecker extends BaseEvaluator {
   protected evaluatorName = 'SemanticRedundancyChecker';
   private useSemanticSimilarity: boolean;
   
-  constructor(useSemanticSimilarity: boolean = true) {
+  constructor(useSemanticSimilarity = true) {
     super();
     this.useSemanticSimilarity = useSemanticSimilarity;
   }
@@ -154,7 +154,7 @@ export class SemanticGoalAlignmentScorer extends BaseEvaluator {
   protected evaluatorName = 'SemanticGoalAlignmentScorer';
   private useSemanticSimilarity: boolean;
   
-  constructor(useSemanticSimilarity: boolean = true) {
+  constructor(useSemanticSimilarity = true) {
     super();
     this.useSemanticSimilarity = useSemanticSimilarity;
   }
@@ -226,7 +226,7 @@ export class SemanticInformationGainCalculator extends BaseEvaluator {
   protected evaluatorName = 'SemanticInformationGainCalculator';
   private useSemanticSimilarity: boolean;
   
-  constructor(useSemanticSimilarity: boolean = true) {
+  constructor(useSemanticSimilarity = true) {
     super();
     this.useSemanticSimilarity = useSemanticSimilarity;
   }

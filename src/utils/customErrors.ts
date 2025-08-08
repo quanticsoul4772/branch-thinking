@@ -6,7 +6,7 @@ export class BranchThinkingError extends Error {
   public readonly code: string;
   public readonly timestamp: Date;
 
-  constructor(message: string, code: string = 'BRANCH_THINKING_ERROR') {
+  constructor(message: string, code = 'BRANCH_THINKING_ERROR') {
     super(message);
     this.name = this.constructor.name;
     this.code = code;

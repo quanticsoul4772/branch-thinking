@@ -57,7 +57,7 @@ export abstract class BaseEvaluator {
     // Convert evaluator name to metric name
     // e.g., CoherenceEvaluator -> coherenceScore
     const baseName = this.evaluatorName.replace('Evaluator', '');
-    return baseName.charAt(0).toLowerCase() + baseName.slice(1) + 'Score';
+    return `${baseName.charAt(0).toLowerCase() + baseName.slice(1)  }Score`;
   }
   
   /**

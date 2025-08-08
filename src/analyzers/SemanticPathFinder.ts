@@ -27,7 +27,7 @@ export class SemanticPathFinder {
     graph: BranchGraph,
     fromThoughtId: string,
     toThoughtId: string,
-    maxSteps: number = 5
+    maxSteps = 5
   ): Promise<PathNode[]> {
     const fromThought = graph.getThought(fromThoughtId);
     const toThought = graph.getThought(toThoughtId);
@@ -106,7 +106,7 @@ export class SemanticPathFinder {
   /**
    * Find the best next step in the path
    */
-  private async findNextStep(
+  private findNextStep(
     currentEmbedding: Float32Array,
     targetEmbedding: Float32Array,
     thoughtEmbeddings: Map<string, { embedding: Float32Array; branchId: string; content: string }>,

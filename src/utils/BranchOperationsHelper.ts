@@ -14,7 +14,7 @@ export class BranchOperationsHelper {
     if (!legacyBranch) {
       return undefined;
     }
-    return legacyBranch as any;
+    return legacyBranch;
   }
   
   /**

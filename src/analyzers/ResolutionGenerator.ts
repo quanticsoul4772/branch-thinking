@@ -32,10 +32,10 @@ export class ResolutionGenerator {
     type: ResolutionType
   ): (points: ContradictionPoint[]) => ResolutionThought[] {
     const generators: Record<ResolutionType, (points: ContradictionPoint[]) => ResolutionThought[]> = {
-      'integration': (points) => this.generateIntegrationResolutions(points),
-      'contextualization': (points) => this.generateContextualizationResolutions(points),
+      integration: (points) => this.generateIntegrationResolutions(points),
+      contextualization: (points) => this.generateContextualizationResolutions(points),
       'higher-order': (points) => this.generateHigherOrderResolutions(points),
-      'temporal': (points) => this.generateTemporalResolutions(points)
+      temporal: (points) => this.generateTemporalResolutions(points)
     };
 
     return generators[type];
@@ -71,7 +71,7 @@ export class ResolutionGenerator {
    * Generate higher-order resolutions
    */
   private generateHigherOrderResolutions(
-    points: ContradictionPoint[]
+    _points: ContradictionPoint[]
   ): ResolutionThought[] {
     return [{
       content: this.formatHigherOrderResolution(),
@@ -84,7 +84,7 @@ export class ResolutionGenerator {
    * Generate temporal resolutions
    */
   private generateTemporalResolutions(
-    points: ContradictionPoint[]
+    _points: ContradictionPoint[]
   ): ResolutionThought[] {
     return [{
       content: this.formatTemporalResolution(),

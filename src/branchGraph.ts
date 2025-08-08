@@ -421,7 +421,7 @@ export class BranchGraph {
     return similarity;
   }
 
-  getMostSimilarThoughts(thoughtId: string, topK: number = 5): { thoughtId: string; similarity: number }[] {
+  getMostSimilarThoughts(thoughtId: string, topK = 5): { thoughtId: string; similarity: number }[] {
     // Validate parameters using centralized validator
     BranchGraphValidator.validateThoughtId(thoughtId);
     BranchGraphValidator.validateCount(topK);

@@ -9,7 +9,7 @@ export class BloomFilter {
   private bits: Uint8Array;
   private size: number;
   private hashFunctions: number;
-  private numElements: number = 0;
+  private numElements = 0;
 
   constructor(expectedElements?: number, falsePositiveRate?: number) {
     const config = getConfig();

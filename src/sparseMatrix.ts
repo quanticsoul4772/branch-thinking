@@ -15,7 +15,7 @@ export class SparseMatrix {
   private cols: number;
   private threshold: number;
 
-  constructor(rows: number, cols: number, threshold: number = 0.1) {
+  constructor(rows: number, cols: number, threshold = 0.1) {
     this.data = new Map();
     this.rows = rows;
     this.cols = cols;
@@ -112,9 +112,9 @@ export class SimilarityMatrix {
   private matrix: SparseMatrix;
   private thoughtIds: Map<string, number>; // thoughtId -> index
   private indexToId: Map<number, string>; // index -> thoughtId
-  private nextIndex: number = 0;
+  private nextIndex = 0;
 
-  constructor(threshold: number = 0.3) {
+  constructor(threshold = 0.3) {
     // Start with reasonable size, will grow as needed
     this.matrix = new SparseMatrix(1000, 1000, threshold);
     this.thoughtIds = new Map();
@@ -187,7 +187,7 @@ export class SimilarityMatrix {
   /**
    * Get most similar thoughts to a given thought
    */
-  getMostSimilar(thoughtId: string, topK: number = 5): Array<{thoughtId: string, similarity: number}> {
+  getMostSimilar(thoughtId: string, topK = 5): Array<{thoughtId: string, similarity: number}> {
     const idx = this.thoughtIds.get(thoughtId);
     if (idx === undefined) {
       return [];
@@ -214,7 +214,7 @@ export class SimilarityMatrix {
   /**
    * Get clusters of similar thoughts
    */
-  getClusters(minSimilarity: number = 0.5): string[][] {
+  getClusters(minSimilarity = 0.5): string[][] {
     const visited = new Set<number>();
     const clusters: string[][] = [];
 
@@ -243,7 +243,7 @@ export class SimilarityMatrix {
         if (cluster.length > 1) {
           const thoughtCluster = cluster
             .map(idx => this.indexToId.get(idx))
-            .filter(id => id !== undefined) as string[];
+            .filter(id => id !== undefined);
           
           if (thoughtCluster.length > 1) {
             clusters.push(thoughtCluster);

@@ -24,7 +24,7 @@ class KeywordExtractor {
     'can', 'just', 'but', 'if', 'or', 'because', 'until', 'while'
   ]);
 
-  static extractKeywords(documents: string[], topN: number = 10): string[] {
+  static extractKeywords(documents: string[], topN = 10): string[] {
     const tokenizedDocs = documents.map(doc => KeywordExtractor.tokenize(doc));
     const tfidfScores = KeywordExtractor.calculateTFIDFScores(tokenizedDocs);
     
@@ -317,7 +317,7 @@ export class SemanticProfileManager {
   /**
    * Suggest branches that could be merged based on high similarity
    */
-  suggestMerges(branches: BranchNode[], threshold: number = 0.85): Array<{
+  suggestMerges(branches: BranchNode[], threshold = 0.85): Array<{
     branch1: BranchNode;
     branch2: BranchNode;
     similarity: number;

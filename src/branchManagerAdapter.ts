@@ -421,7 +421,7 @@ export class BranchManagerAdapter {
   /**
    * Find similar thoughts
    */
-  async findSimilar(query: string, limit: number = 10): Promise<{
+  async findSimilar(query: string, limit = 10): Promise<{
     results: Array<{
       thoughtId: string;
       content: string;
@@ -437,7 +437,7 @@ export class BranchManagerAdapter {
   /**
    * Jump to related thoughts
    */
-  async jumpToRelated(thoughtId: string, limit: number = 5): Promise<{
+  async jumpToRelated(thoughtId: string, limit = 5): Promise<{
     related: Array<{
       thoughtId: string;
       content: string;

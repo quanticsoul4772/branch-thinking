@@ -12,7 +12,7 @@ export class SemanticOperationsHelper {
   /**
    * Find thoughts similar to a query
    */
-  async findSimilar(graph: BranchGraph, query: string, limit: number = 10): Promise<{
+  async findSimilar(graph: BranchGraph, query: string, limit = 10): Promise<{
     results: Array<{
       thoughtId: string;
       content: string;
@@ -33,7 +33,7 @@ export class SemanticOperationsHelper {
   /**
    * Jump to related thoughts from current position
    */
-  async jumpToRelated(graph: BranchGraph, thoughtId: string, limit: number = 5): Promise<{
+  async jumpToRelated(graph: BranchGraph, thoughtId: string, limit = 5): Promise<{
     related: Array<{
       thoughtId: string;
       content: string;

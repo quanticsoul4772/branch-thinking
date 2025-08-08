@@ -14,7 +14,7 @@ export class AppError extends Error {
   constructor(
     public code: ErrorCode,
     message: string,
-    public statusCode: number = 500,
+    public statusCode = 500,
     public details?: any
   ) {
     super(message);

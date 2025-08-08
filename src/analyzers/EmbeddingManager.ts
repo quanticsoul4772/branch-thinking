@@ -18,7 +18,7 @@ export class EmbeddingManager {
     }
 
     // Calculate if not cached
-    return await semanticSimilarity.getEmbedding(content);
+    return semanticSimilarity.getEmbedding(content);
   }
 
   /**

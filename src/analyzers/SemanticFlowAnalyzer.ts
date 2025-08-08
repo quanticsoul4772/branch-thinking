@@ -245,9 +245,9 @@ export class SemanticFlowAnalyzer {
   /**
    * Truncate thought for display
    */
-  private truncateThought(content: string, maxLength: number = 100): string {
+  private truncateThought(content: string, maxLength = 100): string {
     return content.length > maxLength 
-      ? content.substring(0, maxLength) + '...'
+      ? `${content.substring(0, maxLength)}...`
       : content;
   }
 }

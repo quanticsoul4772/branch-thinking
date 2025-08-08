@@ -78,7 +78,7 @@ export function calculateWordFrequency(words: string[]): Map<string, number> {
  * @param topN - Number of top terms to return
  * @returns Array of key terms
  */
-export function extractKeyTerms(text: string, topN: number = 5): string[] {
+export function extractKeyTerms(text: string, topN = 5): string[] {
   const words = preprocessText(text);
   const frequency = calculateWordFrequency(words);
   

@@ -107,7 +107,7 @@ export class StructuredErrorBuilder {
     );
   }
 
-  static internalError(message: string = 'An internal error occurred'): StructuredError {
+  static internalError(message = 'An internal error occurred'): StructuredError {
     return this.create(StructuredErrorCode.INTERNAL_ERROR, message, true);
   }
 
