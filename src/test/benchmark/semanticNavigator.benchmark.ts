@@ -26,7 +26,7 @@ describe('SemanticNavigator Benchmark', () => {
       const branchId = `branch-${branchIndex}`;
       const branch: BranchNode = {
         id: branchId,
-        parentId: branchIndex > 0 ? `branch-${branchIndex - 1}` : undefined,
+        ...(branchIndex > 0 && { parentId: `branch-${branchIndex - 1}` }),
         description: `Test branch ${branchIndex}`,
         thoughtIds: [],
         thoughts: [],
@@ -164,7 +164,7 @@ describe('SemanticNavigator Benchmark', () => {
       const branchId = `large-branch-${branchIndex}`;
       const branch: BranchNode = {
         id: branchId,
-        parentId: branchIndex > 0 ? `large-branch-${branchIndex - 1}` : undefined,
+        ...(branchIndex > 0 && { parentId: `large-branch-${branchIndex - 1}` }),
         description: `Large test branch ${branchIndex}`,
         thoughtIds: [],
         thoughts: [],

@@ -62,7 +62,7 @@ describe('SemanticNavigator', () => {
     branchConfigs.forEach((config, branchIndex) => {
       const branch: BranchNode = {
         id: config.id,
-        parentId: branchIndex > 0 ? branchConfigs[branchIndex - 1].id : undefined,
+        ...(branchIndex > 0 && { parentId: branchConfigs[branchIndex - 1].id }),
         description: `Test branch ${branchIndex + 1}`,
         thoughtIds: [],
         thoughts: [],
@@ -141,7 +141,6 @@ describe('SemanticNavigator', () => {
       // Add an empty branch
       const emptyBranch: BranchNode = {
         id: 'empty-branch',
-        parentId: undefined,
         description: 'Empty branch',
         thoughtIds: [],
         thoughts: [],
@@ -237,7 +236,6 @@ describe('SemanticNavigator', () => {
 
       const singleBranch: BranchNode = {
         id: 'single-branch',
-        parentId: undefined,
         description: 'Single thought branch',
         thoughtIds: ['single-thought'],
         thoughts: [singleThought],
