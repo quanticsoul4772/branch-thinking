@@ -383,7 +383,11 @@ export class SemanticNavigator {
    * Check if path is complete
    */
   private isPathComplete(path: SemanticPathNode[], targetId: string): boolean {
-    return path[path.length - 1].thoughtId === targetId;
+    if (path.length === 0) {
+      return false;
+    }
+    const lastNode = path[path.length - 1];
+    return lastNode ? lastNode.thoughtId === targetId : false;
   }
   
   /**
@@ -405,7 +409,8 @@ export class SemanticNavigator {
       cumulativeDistance
     );
     
-    if (!nextNode || nextNode.similarity <= path[path.length - 1].similarity - 0.1) {
+    const lastNode = path.length > 0 ? path[path.length - 1] : null;
+    if (!nextNode || (lastNode && nextNode.similarity <= lastNode.similarity - 0.1)) {
       // No progress or going backwards too much
       return null;
     }
@@ -609,11 +614,14 @@ export class SemanticNavigator {
       
       const drift = 1 - similarity;
       if (drift > 0.5) { // Significant drift
-        driftPoints.push({
-          index: i,
-          drift,
-          thought: thoughts[i].content.substring(0, 100) + '...'
-        });
+        const thought = thoughts[i];
+        if (thought) {
+          driftPoints.push({
+            index: i,
+            drift,
+            thought: thought.content.substring(0, 100) + '...'
+          });
+        }
       }
     }
     

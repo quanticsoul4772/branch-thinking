@@ -86,14 +86,20 @@ describe('SemanticNavigator Benchmark', () => {
     
     // Verify results are properly sorted by similarity
     for (let i = 1; i < results.length; i++) {
-      if (results[i - 1].similarity < results[i].similarity) {
+      const prev = results[i - 1];
+      const curr = results[i];
+      if (prev && curr && prev.similarity < curr.similarity) {
         throw new Error('Results not properly sorted by similarity');
       }
     }
   });
 
   test('jumpToRelated performance with multiple branches', async () => {
-    const sourceThoughtId = testThoughts[0].id;
+    const firstThought = testThoughts[0];
+    if (!firstThought) {
+      throw new Error('No test thoughts available');
+    }
+    const sourceThoughtId = firstThought.id;
     const startTime = performance.now();
     
     const results = await navigator.jumpToRelated(graph, sourceThoughtId, 15);
@@ -112,7 +118,11 @@ describe('SemanticNavigator Benchmark', () => {
   });
 
   test('analyzeSemanticFlow performance', async () => {
-    const branchId = testBranches[0].id;
+    const firstBranch = testBranches[0];
+    if (!firstBranch) {
+      throw new Error('No test branches available');
+    }
+    const branchId = firstBranch.id;
     const startTime = performance.now();
     
     const analysis = await navigator.analyzeSemanticFlow(graph, branchId);
@@ -120,7 +130,9 @@ describe('SemanticNavigator Benchmark', () => {
     const endTime = performance.now();
     const duration = endTime - startTime;
     
-    console.log(`analyzeSemanticFlow took ${duration.toFixed(2)}ms for branch with ${testBranches[0].thoughts.length} thoughts`);
+    const branch = testBranches[0];
+    const thoughtCount = branch ? branch.thoughts.length : 0;
+    console.log(`analyzeSemanticFlow took ${duration.toFixed(2)}ms for branch with ${thoughtCount} thoughts`);
     console.log(`Continuity score: ${analysis.continuityScore.toFixed(3)}`);
     console.log(`Found ${analysis.driftPoints.length} drift points and ${analysis.semanticClusters.length} clusters`);
     
@@ -132,8 +144,13 @@ describe('SemanticNavigator Benchmark', () => {
 
   test('concurrent operations stress test', async () => {
     const query = "machine learning algorithms";
-    const sourceThoughtId = testThoughts[2].id;
-    const branchId = testBranches[1].id;
+    const thought2 = testThoughts[2];
+    const branch1 = testBranches[1];
+    if (!thought2 || !branch1) {
+      throw new Error('Required test data not available');
+    }
+    const sourceThoughtId = thought2.id;
+    const branchId = branch1.id;
     
     const startTime = performance.now();
     

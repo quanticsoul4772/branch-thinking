@@ -84,7 +84,7 @@ describe('SemanticNavigator', () => {
           id: thoughtId,
           content: `Thought ${thoughtIndex} content for ${config.id}`,
           branchId: config.id,
-          timestamp: Date.now(),
+          timestamp: new Date(),
           metadata: {
             type: 'reasoning',
             confidence: 0.7 + (thoughtIndex * 0.05),
@@ -130,7 +130,11 @@ describe('SemanticNavigator', () => {
 
       // Verify results are sorted by similarity (descending)
       for (let i = 1; i < results.length; i++) {
-        expect(results[i - 1].similarity).toBeGreaterThanOrEqual(results[i].similarity);
+        const prev = results[i - 1];
+        const curr = results[i];
+        if (prev && curr) {
+          expect(prev.similarity).toBeGreaterThanOrEqual(curr.similarity);
+        }
       }
     });
 
@@ -173,7 +177,11 @@ describe('SemanticNavigator', () => {
 
   describe('jumpToRelated', () => {
     test('should find related thoughts excluding source', async () => {
-      const sourceThoughtId = testThoughts[0].id;
+      const firstThought = testThoughts[0];
+      if (!firstThought) {
+        throw new Error('No test thoughts available');
+      }
+      const sourceThoughtId = firstThought.id;
       const results = await navigator.jumpToRelated(graph, sourceThoughtId, 10);
 
       expect(results.length).toBe(11); // All thoughts except source
@@ -190,7 +198,11 @@ describe('SemanticNavigator', () => {
     });
 
     test('should handle same-branch relationships correctly', async () => {
-      const sourceThoughtId = testThoughts[0].id; // From branch-1
+      const firstThought = testThoughts[0];
+      if (!firstThought) {
+        throw new Error('No test thoughts available');
+      }
+      const sourceThoughtId = firstThought.id; // From branch-1
       const results = await navigator.jumpToRelated(graph, sourceThoughtId, 10);
 
       const sameBranchResults = results.filter(r => r.relationship === 'same-branch');
@@ -209,7 +221,11 @@ describe('SemanticNavigator', () => {
     });
 
     test('should respect limit parameter', async () => {
-      const sourceThoughtId = testThoughts[0].id;
+      const firstThought = testThoughts[0];
+      if (!firstThought) {
+        throw new Error('No test thoughts available');
+      }
+      const sourceThoughtId = firstThought.id;
       const results = await navigator.jumpToRelated(graph, sourceThoughtId, 5);
 
       expect(results).toHaveLength(5);
@@ -234,7 +250,7 @@ describe('SemanticNavigator', () => {
         id: 'single-thought',
         content: 'Single thought',
         branchId: 'single-branch',
-        timestamp: Date.now(),
+        timestamp: new Date(),
         metadata: { type: 'reasoning', confidence: 0.8, keyPoints: [] }
       };
 
@@ -306,17 +322,30 @@ describe('SemanticNavigator', () => {
 
       // Each should be properly sorted by similarity
       for (let i = 1; i < results1.length; i++) {
-        expect(results1[i - 1].similarity).toBeGreaterThanOrEqual(results1[i].similarity);
+        const prev1 = results1[i - 1];
+        const curr1 = results1[i];
+        if (prev1 && curr1) {
+          expect(prev1.similarity).toBeGreaterThanOrEqual(curr1.similarity);
+        }
       }
       
       for (let i = 1; i < results2.length; i++) {
-        expect(results2[i - 1].similarity).toBeGreaterThanOrEqual(results2[i].similarity);
+        const prev2 = results2[i - 1];
+        const curr2 = results2[i];
+        if (prev2 && curr2) {
+          expect(prev2.similarity).toBeGreaterThanOrEqual(curr2.similarity);
+        }
       }
     });
 
     test('should handle concurrent related thoughts queries', async () => {
-      const thoughtId1 = testThoughts[0].id;
-      const thoughtId2 = testThoughts[5].id;
+      const thought1 = testThoughts[0];
+      const thought2 = testThoughts[5];
+      if (!thought1 || !thought2) {
+        throw new Error('Required test thoughts not available');
+      }
+      const thoughtId1 = thought1.id;
+      const thoughtId2 = thought2.id;
       
       const [results1, results2] = await Promise.all([
         navigator.jumpToRelated(graph, thoughtId1, 5),

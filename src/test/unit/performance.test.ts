@@ -67,9 +67,12 @@ describe('Performance Tests for Large Inputs', () => {
         expect(duration).toBeLessThan(15000); // Should complete within 15 seconds
       } catch (error) {
         // If it throws a validation error due to length limits, that's acceptable
-        expect(error).toHaveProperty('name');
-        expect(error.name).toBe('ValidationError');
-        expect(error.message).toMatch(/length|size|too large/i);
+        const err = error as { name?: string; message?: string };
+        expect(err).toHaveProperty('name');
+        expect(err.name).toBe('ValidationError');
+        if (err.message) {
+          expect(err.message).toMatch(/length|size|too large/i);
+        }
       }
     });
   });
