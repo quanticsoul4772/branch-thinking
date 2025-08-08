@@ -640,9 +640,9 @@ export class BranchGraph {
   }
   
   /**
-   * Validate thought ID exists
+   * Validate thought ID format
    */
-  private validateThoughtId(thoughtId: any, paramName: string): void {
+  private validateThoughtIdFormat(thoughtId: any, paramName: string): void {
     if (thoughtId === null || thoughtId === undefined) {
       throw new Error(`Parameter '${paramName}' is required`);
     }
@@ -654,6 +654,23 @@ export class BranchGraph {
     if (thoughtId.trim().length === 0) {
       throw new Error(`Parameter '${paramName}' cannot be empty`);
     }
+    
+    // Validate hex format with expected length
+    const hexRegex = /^[a-fA-F0-9]+$/;
+    if (!hexRegex.test(thoughtId)) {
+      throw new Error(`Invalid thought ID format: '${paramName}' must be a hexadecimal string`);
+    }
+    
+    if (thoughtId.length < 8) {
+      throw new Error(`Invalid thought ID format: '${paramName}' must be at least 8 characters long`);
+    }
+  }
+  
+  /**
+   * Validate thought ID exists
+   */
+  private validateThoughtId(thoughtId: any, paramName: string): void {
+    this.validateThoughtIdFormat(thoughtId, paramName);
     
     if (!this.storage.getThought(thoughtId)) {
       throw new Error(`Thought '${thoughtId}' does not exist`);
