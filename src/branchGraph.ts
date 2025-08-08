@@ -1,3 +1,4 @@
+// Branch-thinking MCP server v1.7.1
 import { createHash } from 'crypto';
 import { 
   ThoughtData, 
