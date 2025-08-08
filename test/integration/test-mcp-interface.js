@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { BranchingThoughtServer } from './dist/index.js';
-import { logger } from './utils/logger.js';
+import { BranchingThoughtServer } from '../../dist/index.js';
+import { logger } from '../utils/logger.js';
 
 async function testMCPInterface() {
   logger.info('Testing MCP interface with branch-thinking tool\n');

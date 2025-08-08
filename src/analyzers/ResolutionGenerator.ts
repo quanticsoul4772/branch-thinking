@@ -117,14 +117,14 @@ export class ResolutionGenerator {
    * Format higher-order resolution content
    */
   private formatHigherOrderResolution(): string {
-    return `HIGHER-ORDER SYNTHESIS: The contradiction reveals a limitation in our current conceptual framework. By shifting to a higher level of abstraction, we can see that both perspectives are manifestations of a more fundamental principle that encompasses and transcends the apparent opposition.`;
+    return 'HIGHER-ORDER SYNTHESIS: The contradiction reveals a limitation in our current conceptual framework. By shifting to a higher level of abstraction, we can see that both perspectives are manifestations of a more fundamental principle that encompasses and transcends the apparent opposition.';
   }
 
   /**
    * Format temporal resolution content
    */
   private formatTemporalResolution(): string {
-    return `TEMPORAL RESOLUTION: The contradiction is resolved through temporal sequencing. What appears contradictory when viewed simultaneously makes sense as a progression over time. The first perspective may be true initially, evolving into the second perspective as conditions change.`;
+    return 'TEMPORAL RESOLUTION: The contradiction is resolved through temporal sequencing. What appears contradictory when viewed simultaneously makes sense as a progression over time. The first perspective may be true initially, evolving into the second perspective as conditions change.';
   }
 
   /**

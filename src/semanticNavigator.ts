@@ -40,13 +40,17 @@ export class SemanticNavigator {
     limit: number = 10
   ): Promise<SimilarThought[]> {
     const queryEmbedding = await semanticSimilarity.getEmbedding(query);
-    const results: SimilarThought[] = [];
     
-    // Iterate through all branches
-    for (const branch of graph.getAllBranches()) {
-      const branchResults = await this.findSimilarInBranch(graph, branch, queryEmbedding);
-      results.push(...branchResults);
-    }
+    // Process all branches in parallel with error handling
+    const branchPromises = graph.getAllBranches().map(branch =>
+      this.findSimilarInBranch(graph, branch, queryEmbedding).catch(error => {
+        console.warn(`Failed to process branch ${branch.id}:`, error);
+        return [];
+      })
+    );
+    
+    const branchResults = await Promise.all(branchPromises);
+    const results = branchResults.flat();
     
     // Sort by similarity and return top results
     return results
@@ -62,18 +66,15 @@ export class SemanticNavigator {
     branch: BranchNode,
     queryEmbedding: Float32Array
   ): Promise<SimilarThought[]> {
-    const results: SimilarThought[] = [];
-    
     // Get thoughts from this branch
     const thoughts = this.getBranchThoughts(graph, branch);
     
-    // Calculate similarity for each thought
-    for (const thought of thoughts) {
-      const result = await this.createSimilarThought(thought, branch, queryEmbedding);
-      results.push(result);
-    }
+    // Process all thoughts in parallel
+    const thoughtPromises = thoughts.map(thought =>
+      this.createSimilarThought(thought, branch, queryEmbedding)
+    );
     
-    return results;
+    return Promise.all(thoughtPromises);
   }
   
   /**
@@ -144,20 +145,20 @@ export class SemanticNavigator {
     // Get embedding for the source thought
     const sourceEmbedding = await this.getThoughtEmbedding(thought);
     
-    const results: RelatedThought[] = [];
-    
-    // Search all branches
-    for (const branch of graph.getAllBranches()) {
-      const branchResults = await this.findRelatedInBranch(
+    // Process all branches in parallel
+    const branchPromises = graph.getAllBranches().map(branch =>
+      this.findRelatedInBranch(
         graph,
         branch,
         thoughtId,
         sourceEmbedding,
         sourceBranchId,
         sourceBranch
-      );
-      results.push(...branchResults);
-    }
+      )
+    );
+    
+    const branchResults = await Promise.all(branchPromises);
+    const results = branchResults.flat();
     
     // Sort by similarity, but prioritize same-branch slightly
     return this.sortRelatedThoughts(results, limit);
@@ -174,22 +175,20 @@ export class SemanticNavigator {
     sourceBranchId: string,
     sourceBranch: BranchNode | undefined
   ): Promise<RelatedThought[]> {
-    const results: RelatedThought[] = [];
-    
     const thoughts = this.getFilteredThoughts(graph, branch, excludeThoughtId);
     
-    for (const relatedThought of thoughts) {
-      const result = await this.createRelatedThought(
+    // Process all thoughts in parallel
+    const thoughtPromises = thoughts.map(relatedThought =>
+      this.createRelatedThought(
         relatedThought,
         branch,
         sourceEmbedding,
         sourceBranchId,
         sourceBranch?.parentId
-      );
-      results.push(result);
-    }
+      )
+    );
     
-    return results;
+    return Promise.all(thoughtPromises);
   }
   
   /**
@@ -354,7 +353,9 @@ export class SemanticNavigator {
     let cumulativeDistance = 0;
     
     for (let step = 0; step < maxSteps; step++) {
-      if (this.isPathComplete(path, targetId)) break;
+      if (this.isPathComplete(path, targetId)) {
+        break;
+      }
       
       const result = await this.expandPath(
         graph,
@@ -365,12 +366,16 @@ export class SemanticNavigator {
         cumulativeDistance
       );
       
-      if (!result) break;
+      if (!result) {
+        break;
+      }
       
       currentEmbedding = result.embedding;
       cumulativeDistance = result.distance;
       
-      if (result.thoughtId === targetId) break;
+      if (result.thoughtId === targetId) {
+        break;
+      }
     }
   }
   
@@ -569,14 +574,12 @@ export class SemanticNavigator {
    * Get all embeddings for thoughts
    */
   private async getAllEmbeddings(thoughts: ThoughtData[]): Promise<Float32Array[]> {
-    const embeddings: Float32Array[] = [];
+    // Process all thoughts in parallel
+    const embeddingPromises = thoughts.map(thought =>
+      this.getThoughtEmbedding(thought)
+    );
     
-    for (const thought of thoughts) {
-      const embedding = await this.getThoughtEmbedding(thought);
-      embeddings.push(embedding);
-    }
-    
-    return embeddings;
+    return Promise.all(embeddingPromises);
   }
   
   /**

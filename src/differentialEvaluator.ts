@@ -52,7 +52,9 @@ export class SimilarityCache {
     // Check if we need to evict
     if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
       const lru = this.accessOrder.shift();
-      if (lru) this.cache.delete(lru);
+      if (lru) {
+        this.cache.delete(lru);
+      }
     }
     
     this.cache.set(key, similarity);
@@ -71,7 +73,9 @@ class MetricCalculator {
   ) {}
 
   async calculateCoherence(thought: ThoughtData, recentThoughts: ThoughtData[]): Promise<number> {
-    if (recentThoughts.length === 0) return 1.0;
+    if (recentThoughts.length === 0) {
+      return 1.0;
+    }
 
     let coherenceSum = 0;
     for (const recentThought of recentThoughts) {
@@ -87,7 +91,9 @@ class MetricCalculator {
   }
 
   calculateContradictionRate(thought: ThoughtData, recentThoughts: ThoughtData[]): number {
-    if (recentThoughts.length === 0) return 0;
+    if (recentThoughts.length === 0) {
+      return 0;
+    }
 
     let contradictionCount = 0;
     for (const recentThought of recentThoughts) {
@@ -144,7 +150,9 @@ class MetricCalculator {
   }
 
   calculateGoalAlignment(thoughts: ThoughtData[], goal: string | null): number {
-    if (!goal) return 0.5;
+    if (!goal) {
+      return 0.5;
+    }
 
     const goalTerms = this.getTerms(goal);
     const branchTerms = new Set<string>();
@@ -158,7 +166,9 @@ class MetricCalculator {
   }
 
   calculateConfidenceGradient(thoughts: ThoughtData[]): number {
-    if (thoughts.length < 2) return 0;
+    if (thoughts.length < 2) {
+      return 0;
+    }
 
     const recentConfidences = thoughts.slice(-5).map(t => t.metadata.confidence);
     let gradient = 0;
@@ -262,7 +272,9 @@ export class DifferentialEvaluator {
     const deltas: EvaluationDelta[] = [];
     for (const event of events) {
       const delta = await this.processEvent(event, graph, branchId);
-      if (delta) deltas.push(delta);
+      if (delta) {
+        deltas.push(delta);
+      }
     }
     return deltas;
   }
@@ -272,11 +284,11 @@ export class DifferentialEvaluator {
    */
   private async processEvent(event: ThoughtEvent, graph: BranchGraph, branchId: string): Promise<EvaluationDelta | null> {
     switch (event.type) {
-      case 'thought_added':
-        if (event.branchId === branchId && event.thoughtId) {
-          return await this.evaluateNewThought(event.thoughtId, graph, branchId);
-        }
-        break;
+    case 'thought_added':
+      if (event.branchId === branchId && event.thoughtId) {
+        return await this.evaluateNewThought(event.thoughtId, graph, branchId);
+      }
+      break;
     }
     return null;
   }
@@ -309,13 +321,19 @@ export class DifferentialEvaluator {
 
   private getThoughtContext(thoughtId: string, graph: BranchGraph, branchId: string): { thought: ThoughtData, recentThoughts: ThoughtData[] } | null {
     const thought = graph.getThought(thoughtId);
-    if (!thought) return null;
+    if (!thought) {
+      return null;
+    }
     
     const branch = graph.getBranch(branchId);
-    if (!branch) return null;
+    if (!branch) {
+      return null;
+    }
     
     const thoughtIndex = branch.thoughtIds.indexOf(thoughtId);
-    if (thoughtIndex === -1) return null;
+    if (thoughtIndex === -1) {
+      return null;
+    }
     
     // Only compare with thoughts that came BEFORE this one
     const previousThoughtIds = branch.thoughtIds.slice(0, thoughtIndex);
@@ -337,10 +355,14 @@ export class DifferentialEvaluator {
     graph: BranchGraph,
     branchId: string
   ): EvaluationResult {
-    if (deltas.length === 0) return base;
+    if (deltas.length === 0) {
+      return base;
+    }
     
     const branch = graph.getBranch(branchId);
-    if (!branch) return base;
+    if (!branch) {
+      return base;
+    }
     
     const aggregatedMetrics = this.aggregateMetrics(base, deltas, branch);
     const thoughts = this.getBranchThoughts(branch, graph);

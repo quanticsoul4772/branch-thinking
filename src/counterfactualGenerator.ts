@@ -167,36 +167,36 @@ export class CounterfactualGenerator {
     let modified = content;
 
     switch (scenario.variationType) {
-      case 'opposite':
-        // Negate key claims
-        modified = modified
-          .replace(/will /g, 'will not ')
-          .replace(/can /g, 'cannot ')
-          .replace(/should /g, 'should not ')
-          .replace(/is /g, 'is not ')
-          .replace(/increase/g, 'decrease')
-          .replace(/improve/g, 'worsen')
-          .replace(/benefit/g, 'harm');
-        break;
+    case 'opposite':
+      // Negate key claims
+      modified = modified
+        .replace(/will /g, 'will not ')
+        .replace(/can /g, 'cannot ')
+        .replace(/should /g, 'should not ')
+        .replace(/is /g, 'is not ')
+        .replace(/increase/g, 'decrease')
+        .replace(/improve/g, 'worsen')
+        .replace(/benefit/g, 'harm');
+      break;
 
-      case 'extreme':
-        // Amplify claims
-        modified = modified
-          .replace(/some /g, 'all ')
-          .replace(/might /g, 'definitely will ')
-          .replace(/could /g, 'must ')
-          .replace(/partially /g, 'completely ')
-          .replace(/gradually /g, 'immediately ');
-        break;
+    case 'extreme':
+      // Amplify claims
+      modified = modified
+        .replace(/some /g, 'all ')
+        .replace(/might /g, 'definitely will ')
+        .replace(/could /g, 'must ')
+        .replace(/partially /g, 'completely ')
+        .replace(/gradually /g, 'immediately ');
+      break;
 
-      case 'moderate':
-        // Soften claims
-        modified = modified
-          .replace(/will /g, 'might ')
-          .replace(/all /g, 'some ')
-          .replace(/definitely /g, 'possibly ')
-          .replace(/must /g, 'could ');
-        break;
+    case 'moderate':
+      // Soften claims
+      modified = modified
+        .replace(/will /g, 'might ')
+        .replace(/all /g, 'some ')
+        .replace(/definitely /g, 'possibly ')
+        .replace(/must /g, 'could ');
+      break;
     }
 
     return `[COUNTERFACTUAL] ${modified}`;

@@ -11,7 +11,9 @@ export class BranchOperationsHelper {
    */
   getBranch(graph: BranchGraph, branchId: string): ThoughtBranch | undefined {
     const legacyBranch = graph.toLegacyBranch(branchId);
-    if (!legacyBranch) return undefined;
+    if (!legacyBranch) {
+      return undefined;
+    }
     return legacyBranch as any;
   }
   
@@ -28,7 +30,9 @@ export class BranchOperationsHelper {
    * Get active branch
    */
   getActiveBranch(graph: BranchGraph, activeBranchId: string | null): ThoughtBranch | undefined {
-    if (!activeBranchId) return undefined;
+    if (!activeBranchId) {
+      return undefined;
+    }
     return graph.toLegacyBranch(activeBranchId);
   }
   
@@ -55,7 +59,9 @@ export class BranchOperationsHelper {
    */
   getBranchHistory(graph: BranchGraph, branchId: string): any {
     const branch = graph.getBranch(branchId);
-    if (!branch) throw new Error(`Branch ${branchId} not found`);
+    if (!branch) {
+      throw new Error(`Branch ${branchId} not found`);
+    }
     
     return {
       branch,
@@ -71,7 +77,9 @@ export class BranchOperationsHelper {
     inputBranchId: string | undefined,
     activeBranchId: string | null
   ): string {
-    if (inputBranchId) return inputBranchId;
+    if (inputBranchId) {
+      return inputBranchId;
+    }
     
     if (!activeBranchId) {
       return graph.createBranch();

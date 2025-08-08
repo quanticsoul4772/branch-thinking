@@ -89,21 +89,27 @@ class RelevanceScorer {
   }
 
   private calculateKeywordScore(tool: ToolInfo, keywords: Set<string>): number {
-    if (tool.keywords.length === 0) return 0;
+    if (tool.keywords.length === 0) {
+      return 0;
+    }
     
     const matches = tool.keywords.filter(kw => keywords.has(kw)).length;
     return matches / tool.keywords.length;
   }
 
   private calculatePatternScore(tool: ToolInfo, content: string): number {
-    if (tool.patterns.length === 0) return 0;
+    if (tool.patterns.length === 0) {
+      return 0;
+    }
     
     const matches = tool.patterns.filter(p => p.test(content)).length;
     return matches / tool.patterns.length;
   }
 
   private calculateTypeScore(tool: ToolInfo, thoughtTypes: string[]): number {
-    if (thoughtTypes.length === 0) return 0;
+    if (thoughtTypes.length === 0) {
+      return 0;
+    }
     
     let alignmentCount = 0;
     for (const type of thoughtTypes) {
@@ -245,7 +251,9 @@ export class ToolSuggester {
   ): void {
     for (const toolName of tools) {
       const toolInfo = toolRegistry[toolName];
-      if (!toolInfo) continue;
+      if (!toolInfo) {
+        continue;
+      }
 
       if (suggestions.has(toolName)) {
         this.boostExistingSuggestion(suggestions.get(toolName)!, contextKey);

@@ -55,7 +55,9 @@ export class TextUtils {
     
     const intersection = new Set([...terms1].filter(x => terms2.has(x)));
     
-    if (terms1.size === 0 || terms2.size === 0) return 0;
+    if (terms1.size === 0 || terms2.size === 0) {
+      return 0;
+    }
     
     return intersection.size / Math.sqrt(terms1.size * terms2.size);
   }

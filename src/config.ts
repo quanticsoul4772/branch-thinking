@@ -228,7 +228,9 @@ export class ConfigLoader {
   private static instance: BranchThinkingConfig | null = null;
   
   static load(): BranchThinkingConfig {
-    if (this.instance) return this.instance;
+    if (this.instance) {
+      return this.instance;
+    }
     
     // Start with defaults
     const config = { ...DEFAULT_CONFIG };

@@ -1,7 +1,6 @@
 import { BranchManagerAdapter } from '../branchManagerAdapter.js';
 import { Command, CommandData, CommandResult } from './Command.js';
 import { logger } from '../utils/logger.js';
-import { StructuredErrorBuilder, toMCPResponse } from '../utils/structuredErrors.js';
 
 // Import all command implementations
 import { ListCommand } from './ListCommand.js';
@@ -72,16 +71,31 @@ export class CommandHandler {
     const command = this.commands.get(type);
     if (!command) {
       logger.error(`Unknown command: ${type}`);
-      const structuredError = StructuredErrorBuilder.commandNotFound(type, Array.from(this.commands.keys()));
-      return toMCPResponse(structuredError);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            error: `Unknown command: ${type}`,
+            status: 'failed',
+            availableCommands: Array.from(this.commands.keys())
+          }, null, 2)
+        }]
+      };
     }
     
     try {
       return await command.execute(data);
     } catch (error) {
       logger.error(`Command execution failed: ${type}`, error);
-      const structuredError = StructuredErrorBuilder.fromError(error);
-      return toMCPResponse(structuredError);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            error: error instanceof Error ? error.message : String(error),
+            status: 'failed'
+          }, null, 2)
+        }]
+      };
     }
   }
   

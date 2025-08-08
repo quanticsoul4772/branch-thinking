@@ -25,7 +25,9 @@ process.stdout.write = function(chunk: any, encoding?: any, callback?: any): boo
     return originalStdoutWrite(chunk, encoding, callback);
   }
   // Silently discard everything else
-  if (callback) callback();
+  if (callback) {
+    callback();
+  }
   return true;
 } as any;
 
@@ -42,13 +44,13 @@ console.error = (...args: any[]) => {
 };
 
 // Now safe to import - any console output will be suppressed
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
-} from "@modelcontextprotocol/sdk/types.js";
+} from '@modelcontextprotocol/sdk/types.js';
 import { BranchManagerAdapter } from './branchManagerAdapter.js';
 import { BranchingThoughtInput } from './types.js';
 import { CommandHandler } from './commands/CommandHandler.js';
@@ -63,9 +65,15 @@ class BranchingThoughtServer {
   }
 
   private getScoreInterpretation(score: number): string {
-    if (score > 0.8) return 'Excellent reasoning path';
-    if (score > 0.6) return 'Good reasoning, some improvements possible';
-    if (score > 0.4) return 'Moderate quality, significant issues';
+    if (score > 0.8) {
+      return 'Excellent reasoning path';
+    }
+    if (score > 0.6) {
+      return 'Good reasoning, some improvements possible';
+    }
+    if (score > 0.4) {
+      return 'Moderate quality, significant issues';
+    }
     return 'Poor reasoning, consider abandoning';
   }
 
@@ -73,11 +81,21 @@ class BranchingThoughtServer {
     const issues = [];
     const { coherenceScore, contradictionScore, redundancyScore, informationGain, goalAlignment } = evaluation;
     
-    if (coherenceScore < 0.5) issues.push('low coherence');
-    if (contradictionScore > 0.5) issues.push('contradictions detected');
-    if (redundancyScore > 0.5) issues.push('high redundancy');
-    if (informationGain < 0.3) issues.push('low information gain');
-    if (goalAlignment < 0.5) issues.push('poor goal alignment');
+    if (coherenceScore < 0.5) {
+      issues.push('low coherence');
+    }
+    if (contradictionScore > 0.5) {
+      issues.push('contradictions detected');
+    }
+    if (redundancyScore > 0.5) {
+      issues.push('high redundancy');
+    }
+    if (informationGain < 0.3) {
+      issues.push('low information gain');
+    }
+    if (goalAlignment < 0.5) {
+      issues.push('poor goal alignment');
+    }
     
     return issues;
   }
@@ -145,14 +163,21 @@ class BranchingThoughtServer {
 
       return {
         content: [{
-          type: "text",
+          type: 'text',
           text: JSON.stringify(response, null, 2)
         }]
       };
     } catch (error) {
-      const { StructuredErrorBuilder, toMCPResponse } = await import('./utils/structuredErrors.js');
-      const structuredError = StructuredErrorBuilder.fromError(error);
-      return toMCPResponse(structuredError);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            error: error instanceof Error ? error.message : String(error),
+            status: 'failed'
+          }, null, 2)
+        }],
+        isError: true
+      };
     }
   }
 
@@ -179,8 +204,8 @@ const BRANCHING_THOUGHT_TOOL: Tool = createToolDefinition();
 
 const server = new Server(
   {
-    name: "branch-thinking-server",
-    version: "0.1.0",
+    name: 'branch-thinking-server',
+    version: '0.1.0',
   },
   {
     capabilities: {
@@ -196,13 +221,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 }));
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "branch-thinking") {
+  if (request.params.name === 'branch-thinking') {
     return await thinkingServer.processThought(request.params.arguments);
   }
 
-  const { StructuredErrorBuilder, toMCPResponse } = await import('./utils/structuredErrors.js');
-  const structuredError = StructuredErrorBuilder.commandNotFound(request.params.name, ['branch-thinking']);
-  return toMCPResponse(structuredError);
+  return {
+    content: [{
+      type: 'text',
+      text: `Unknown tool: ${request.params.name}`
+    }],
+    isError: true
+  };
 });
 
 async function runServer() {

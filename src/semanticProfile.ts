@@ -110,13 +110,17 @@ class BranchSimilarityCalculator {
     const matrix = new Map<string, Map<string, number>>();
     
     for (const branch1 of branches) {
-      if (!branch1.semanticProfile) continue;
+      if (!branch1.semanticProfile) {
+        continue;
+      }
       
       const row = new Map<string, number>();
       matrix.set(branch1.id, row);
       
       for (const branch2 of branches) {
-        if (!branch2.semanticProfile) continue;
+        if (!branch2.semanticProfile) {
+          continue;
+        }
         
         const similarity = branch1.id === branch2.id 
           ? 1.0 
@@ -259,7 +263,9 @@ export class SemanticProfileManager {
    * Update keywords for a branch using TF-IDF
    */
   private async updateKeywords(branch: BranchNode): Promise<void> {
-    if (!branch.semanticProfile || branch.thoughts.length === 0) return;
+    if (!branch.semanticProfile || branch.thoughts.length === 0) {
+      return;
+    }
     
     const documents = branch.thoughts.map(thought => thought.content);
     branch.semanticProfile.keywords = KeywordExtractor.extractKeywords(documents, 10);
@@ -318,7 +324,9 @@ export class SemanticProfileManager {
         const branch1 = branches[i];
         const branch2 = branches[j];
         
-        if (!branch1.semanticProfile || !branch2.semanticProfile) continue;
+        if (!branch1.semanticProfile || !branch2.semanticProfile) {
+          continue;
+        }
         
         const similarity = this.calculateBranchSimilarity(branch1, branch2);
         

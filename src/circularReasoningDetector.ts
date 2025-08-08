@@ -156,7 +156,9 @@ export class CircularReasoningDetector {
     const visited = new Set<string>();
 
     for (const thoughtId of this.thoughtContent.keys()) {
-      if (visited.has(thoughtId)) continue;
+      if (visited.has(thoughtId)) {
+        continue;
+      }
       
       const circlesFromThought = this.detectCirclesFromThought(thoughtId);
       patterns.push(...circlesFromThought);
@@ -190,7 +192,9 @@ export class CircularReasoningDetector {
    * Check if current node forms a circle
    */
   private checkForCircle(current: string, path: string[], visitedInPath: Set<string>): string[] | null {
-    if (!visitedInPath.has(current)) return null;
+    if (!visitedInPath.has(current)) {
+      return null;
+    }
     return this.extractCircle(current, path);
   }
 
@@ -285,7 +289,9 @@ export class CircularReasoningDetector {
     const patterns: CircularPattern[] = [];
 
     for (const thought2 of thoughtsWithConclusion) {
-      if (thought1 === thought2) continue;
+      if (thought1 === thought2) {
+        continue;
+      }
       
       const pattern = this.checkReciprocalRelationship(thought1, thought2);
       if (pattern) {
@@ -308,7 +314,9 @@ export class CircularReasoningDetector {
 
     const hasReciprocal = this.hasReciprocalConcepts(conclusions1, premises2);
 
-    if (!hasReciprocal) return null;
+    if (!hasReciprocal) {
+      return null;
+    }
 
     return {
       type: 'premise',
@@ -459,7 +467,9 @@ export class CircularReasoningDetector {
     const patterns: CircularPattern[] = [];
 
     for (const [thought, reachable] of reachability) {
-      if (!reachable.has(thought)) continue;
+      if (!reachable.has(thought)) {
+        continue;
+      }
 
       const pattern = this.createIndirectPattern(thought);
       if (pattern) {
@@ -475,7 +485,9 @@ export class CircularReasoningDetector {
    */
   private createIndirectPattern(thought: string): CircularPattern | null {
     const path = this.findPath(thought, thought);
-    if (path.length <= 3) return null; // Skip direct circles
+    if (path.length <= 3) {
+      return null;
+    } // Skip direct circles
 
     return {
       type: 'indirect',
@@ -496,9 +508,13 @@ export class CircularReasoningDetector {
       const current = queue.shift()!;
       
       const pathFound = this.checkPathFound(current, end);
-      if (pathFound) return current.path;
+      if (pathFound) {
+        return current.path;
+      }
 
-      if (visited.has(current.node)) continue;
+      if (visited.has(current.node)) {
+        continue;
+      }
       
       visited.add(current.node);
       this.expandPath(current, queue);

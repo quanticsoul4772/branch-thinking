@@ -94,7 +94,9 @@ export class ThoughtCollector {
   getThoughtBranchId(graph: BranchGraph, thoughtId: string): string | null {
     // Try the internal mapping first if available
     const branchId = (graph as any).thoughtToBranch?.get(thoughtId);
-    if (branchId) return branchId;
+    if (branchId) {
+      return branchId;
+    }
 
     // Otherwise search all branches
     for (const branch of graph.getAllBranches()) {

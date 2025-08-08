@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { BranchManagerAdapter } from './dist/branchManagerAdapter.js';
-import { logger } from './utils/logger.js';
+import { BranchManagerAdapter } from '../../dist/branchManagerAdapter.js';
+import { logger } from '../utils/logger.js';
 
 async function testBranchCreation() {
   logger.info('Testing branch creation issue\n');

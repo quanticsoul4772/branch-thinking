@@ -118,7 +118,9 @@ export class SerializationHelper {
     let activeBranchId: string | null = null;
     
     for (const entity of data.entities) {
-      if (!this.isBranchEntity(entity)) continue;
+      if (!this.isBranchEntity(entity)) {
+        continue;
+      }
       
       const branchId = entity.name.substring(4);
       const result = await this.importBranchThoughts(graph, entity.observations, branchId);
@@ -168,7 +170,9 @@ export class SerializationHelper {
     branchId: string
   ): Promise<void> {
     const match = observation.match(/^THOUGHT\[([^|]+)\|([^|]+)\|([^|]+)\|conf:([\d.]+)\]: (.+)$/);
-    if (!match) return;
+    if (!match) {
+      return;
+    }
     
     const [, id, timestamp, type, confidence, content] = match;
     

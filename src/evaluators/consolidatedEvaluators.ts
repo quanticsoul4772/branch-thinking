@@ -268,7 +268,7 @@ export class ContradictionDetector extends BaseEvaluator {
     const content2 = thought2.content.toLowerCase();
     
     // Simple heuristic: check for negation patterns
-    const negationPatterns = ['not', 'no', 'never', 'cannot', "won't", "shouldn't"];
+    const negationPatterns = ['not', 'no', 'never', 'cannot', 'won\'t', 'shouldn\'t'];
     
     for (const pattern of negationPatterns) {
       if ((content1.includes(pattern) && !content2.includes(pattern)) ||

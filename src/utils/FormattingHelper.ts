@@ -10,7 +10,9 @@ export class FormattingHelper {
    * Format branch status for JSON output
    */
   formatBranchStatus(branch: ThoughtBranch | null | undefined, activeBranchId: string | null): any {
-    if (!branch) return { error: 'Branch not found' };
+    if (!branch) {
+      return { error: 'Branch not found' };
+    }
     
     const isActive = branch.id === activeBranchId;
     const config = getConfig();

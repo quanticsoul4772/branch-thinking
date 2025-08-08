@@ -24,7 +24,7 @@ export class BranchGraphAnalytics {
     activeBranches: number;
     averageThoughtsPerBranch: number;
     branchStateDistribution: Record<string, number>;
-  } {
+    } {
     const branches = this.storage.getAllBranches();
     const totalBranches = branches.length;
     const totalThoughts = branches.reduce((sum, b) => sum + b.thoughts.length, 0);
@@ -92,7 +92,7 @@ export class BranchGraphAnalytics {
     }>;
     mostSimilarPairs: Array<{ branches: string[]; similarity: number }>;
     mostDistinctBranches: string[];
-  } {
+    } {
     const branches = this.storage.getAllBranches();
     const comparisons: Array<{
       branch1: string;
@@ -107,7 +107,9 @@ export class BranchGraphAnalytics {
         const profile1 = branches[i].semanticProfile;
         const profile2 = branches[j].semanticProfile;
         
-        if (!profile1 || !profile2) continue;
+        if (!profile1 || !profile2) {
+          continue;
+        }
         
         const sharedConcepts = this.findSharedConcepts(profile1, profile2);
         const similarity = this.calculateProfileSimilarity(profile1, profile2);
@@ -201,7 +203,9 @@ export class BranchGraphAnalytics {
         const branch1 = branches[i];
         const branch2 = branches[j];
         
-        if (!branch1.semanticProfile || !branch2.semanticProfile) continue;
+        if (!branch1.semanticProfile || !branch2.semanticProfile) {
+          continue;
+        }
         
         // Use simple cosine similarity for now
         const text1 = branch1.thoughts.map(t => t.content).join(' ');
@@ -255,7 +259,9 @@ export class BranchGraphAnalytics {
     }> = [];
     
     for (const branch of branches) {
-      if (!branch.semanticProfile || branch.thoughts.length < 3) continue;
+      if (!branch.semanticProfile || branch.thoughts.length < 3) {
+        continue;
+      }
       
       const driftAnalysis = await this.analyzeBranchDrift(branch);
       
@@ -304,11 +310,11 @@ export class BranchGraphAnalytics {
     return {
       driftScore,
       reason: driftScore > 0.7 ? 'Recent thoughts significantly diverge from initial direction' :
-              driftScore > 0.5 ? 'Moderate drift from original focus' :
-              'Minor drift detected',
+        driftScore > 0.5 ? 'Moderate drift from original focus' :
+          'Minor drift detected',
       recommendation: driftScore > 0.7 ? 'Consider splitting into separate branches' :
-                      driftScore > 0.5 ? 'Review branch focus and realign if needed' :
-                      'Continue with current direction'
+        driftScore > 0.5 ? 'Review branch focus and realign if needed' :
+          'Continue with current direction'
     };
   }
 }

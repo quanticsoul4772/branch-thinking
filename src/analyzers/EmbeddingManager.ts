@@ -56,7 +56,9 @@ export class EmbeddingManager {
     let bestSimilarity = -1;
 
     for (const [id, embedding] of candidateEmbeddings) {
-      if (excludeIds?.has(id)) continue;
+      if (excludeIds?.has(id)) {
+        continue;
+      }
 
       const similarity = this.calculateSimilarity(targetEmbedding, embedding);
       if (similarity > bestSimilarity) {
