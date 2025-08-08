@@ -4,6 +4,7 @@
 export type BranchState = 'active' | 'suspended' | 'completed' | 'dead_end';
 export type InsightType = 'behavioral_pattern' | 'feature_integration' | 'observation' | 'connection';
 export type CrossRefType = 'complementary' | 'contradictory' | 'builds_upon' | 'alternative' | 'supports';
+export type ThoughtType = 'analysis' | 'hypothesis' | 'observation' | 'validation' | 'synthesis' | 'solution';
 
 // Event types for event sourcing
 export type EventType = 'thought_added' | 'branch_created' | 'cross_ref_added' | 'branch_state_changed' | 'evaluation_completed';
