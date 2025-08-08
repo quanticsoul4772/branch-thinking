@@ -7,6 +7,7 @@ import {
   BranchNotFoundError, 
   ThoughtNotFoundError 
 } from '../../utils/customErrors.js';
+import { getConfig } from '../../config.js';
 
 describe('BranchGraph Input Validation and Error Handling', () => {
   let graph: BranchGraph;
@@ -46,8 +47,8 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for content exceeding maximum length', async () => {
-      const config = getConfig();
-      const maxLength = config.maxContentLength || 10000;
+      // Use a reasonable max length for testing (10k characters)
+      const maxLength = 10000;
       const longContent = 'a'.repeat(maxLength + 1);
       await expect(graph.addThought({
         content: longContent,

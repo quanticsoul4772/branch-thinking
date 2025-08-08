@@ -18,6 +18,7 @@ import { semanticProfileManager } from './semanticProfile.js';
 import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
+import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
 
 export interface AddThoughtParams {
   content: string;
@@ -64,6 +65,7 @@ export class BranchGraph {
   private static readonly MAX_CONFIDENCE = 1.0;
   private static readonly MAX_STRENGTH = 1.0;
   private static readonly MIN_STRENGTH = 0.0;
+  private static readonly MAX_BRANCH_ID_LENGTH = 100;
   
   constructor() {
     // Initialize components
@@ -75,6 +77,9 @@ export class BranchGraph {
     this.contradictionFilter = new ContradictionBloomFilter();
     this.similarityMatrix = new SimilarityMatrix(getConfig().matrix.similarityThreshold);
     this.circularDetector = new CircularReasoningDetector();
+    
+    // Initialize main branch
+    this.createBranchWithId('main');
   }
 
   /**
@@ -288,7 +293,7 @@ export class BranchGraph {
     
     // Check if branch already exists
     if (this.storage.hasBranch(branchId)) {
-      throw new Error(`Branch with ID '${branchId}' already exists`);
+      return; // Silently skip if branch already exists
     }
     
     this.storage.createBranch(branchId, parentBranchId);
@@ -459,7 +464,7 @@ export class BranchGraph {
    */
   private validateAddThoughtInput(input: BranchingThoughtInput): void {
     if (!input) {
-      throw new Error('Input parameter is required');
+      throw new ValidationError('Input parameter is required', 'input');
     }
     
     // Validate content
@@ -499,19 +504,19 @@ export class BranchGraph {
    */
   private validateContent(content: any): void {
     if (content === null || content === undefined) {
-      throw new Error('Content is required');
+      throw new ValidationError('Content is required', 'content');
     }
     
     if (typeof content !== 'string') {
-      throw new Error('Content must be a string');
+      throw new ValidationError('Content must be a string', 'content', content);
     }
     
     if (content.trim().length < BranchGraph.MIN_CONTENT_LENGTH) {
-      throw new Error(`Content must be at least ${BranchGraph.MIN_CONTENT_LENGTH} character(s) long`);
+      throw new ValidationError(`Content must be at least ${BranchGraph.MIN_CONTENT_LENGTH} character(s) long`, 'content', content);
     }
     
     if (content.length > BranchGraph.MAX_CONTENT_LENGTH) {
-      throw new Error(`Content must not exceed ${BranchGraph.MAX_CONTENT_LENGTH} characters`);
+      throw new ValidationError(`Content must not exceed ${BranchGraph.MAX_CONTENT_LENGTH} characters`, 'content', content);
     }
   }
   
