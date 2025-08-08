@@ -33,6 +33,9 @@ export interface BranchThinkingConfig {
       good: number;
       moderate: number;
     };
+    maxContentLength: number;
+    maxTraversalDepth: number;
+    maxResultCount: number;
   };
   
   branch: {
@@ -136,7 +139,10 @@ export const DEFAULT_CONFIG: BranchThinkingConfig = {
       excellent: 0.75,
       good: 0.55,
       moderate: 0.35
-    }
+    },
+    maxContentLength: 10000,
+    maxTraversalDepth: 1000,
+    maxResultCount: 1000
   },
   
   branch: {
