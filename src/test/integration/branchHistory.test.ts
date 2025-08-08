@@ -29,7 +29,6 @@ describe('Branch History and Focus Integration', () => {
     const oauthBranch = graph.addThought({
       content: 'Implementing OAuth2 with third-party providers',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.8,
       keyPoints: ['oauth2', 'third-party', 'google', 'github']
     });
@@ -38,7 +37,6 @@ describe('Branch History and Focus Integration', () => {
     const jwtBranch = graph.addThought({
       content: 'JWT-based authentication with local storage',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.7,
       keyPoints: ['jwt', 'local', 'stateless']
     });
@@ -47,7 +45,6 @@ describe('Branch History and Focus Integration', () => {
     const sessionBranch = graph.addThought({
       content: 'Traditional session-based authentication',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.6,
       keyPoints: ['sessions', 'server-side', 'cookies']
     });
@@ -97,7 +94,7 @@ describe('Branch History and Focus Integration', () => {
 
     if (jwtBranchId && oauthBranchId) {
       // Add a thought with cross-reference instead of using crossReference method
-      const crossRefThought = graph.addThought({
+      const crossRefThought = await graph.addThought({
         content: 'Authentication comparison analysis',
         type: 'analysis' as ThoughtType,
         branchId: oauthBranchId,
@@ -138,21 +135,18 @@ describe('Branch History and Focus Integration', () => {
     const mysqlBranch = graph.addThought({
       content: 'MySQL with normalized schema design',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.8
     });
 
     const mongoBranch = graph.addThought({
       content: 'MongoDB with document-based collections',
       type: 'solution' as ThoughtType, 
-      parentBranchId: 'main',
       confidence: 0.7
     });
 
     const postgresBranch = graph.addThought({
       content: 'PostgreSQL with JSON columns for flexibility',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.85
     });
 
@@ -228,14 +222,12 @@ describe('Branch History and Focus Integration', () => {
     const restBranch = graph.addThought({
       content: 'RESTful API with standard HTTP methods',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main',
       confidence: 0.7
     });
 
     const graphqlBranch = graph.addThought({
       content: 'GraphQL API with flexible queries',
       type: 'solution' as ThoughtType,
-      parentBranchId: 'main', 
       confidence: 0.8
     });
 

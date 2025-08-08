@@ -9,8 +9,8 @@ import { ThoughtData, BranchNode } from '../types.js';
 export interface ThoughtWithContext {
   thought: ThoughtData;
   branchId: string;
-  branchDescription?: string;
-  relationship?: 'same-branch' | 'cross-branch' | 'parent-branch' | 'child-branch';
+  branchDescription?: string | undefined;
+  relationship?: 'same-branch' | 'cross-branch' | 'parent-branch' | 'child-branch' | undefined;
 }
 
 export class ThoughtCollector {
@@ -93,7 +93,7 @@ export class ThoughtCollector {
    */
   getThoughtBranchId(graph: BranchGraph, thoughtId: string): string | null {
     // Try the internal mapping first if available
-    const branchId = (graph as any).thoughtToBranch?.get(thoughtId);
+    const branchId = (graph as { thoughtToBranch?: Map<string, string> }).thoughtToBranch?.get(thoughtId);
     if (branchId) {
       return branchId;
     }

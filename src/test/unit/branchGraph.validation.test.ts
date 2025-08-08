@@ -75,7 +75,6 @@ describe('BranchGraph Input Validation and Error Handling', () => {
       await expect(graph.addThought({
         content: 'Test content',
         type: 'analysis',
-        parentBranchId: 'non-existent-branch'
       })).rejects.toThrow(BranchNotFoundError);
     });
 

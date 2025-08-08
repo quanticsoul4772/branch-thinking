@@ -30,9 +30,11 @@ describe('SemanticNavigator Benchmark', () => {
         description: `Test branch ${branchIndex}`,
         thoughtIds: [],
         thoughts: [],
-        timestamp: new Date(),
-        isComplete: false,
-        metadata: {}
+        state: 'active' as const,
+        priority: 0.5,
+        confidence: 0.5,
+        lastEvaluationIndex: 0,
+        childIds: new Set<string>()
       };
 
       // Create thoughts for this branch
@@ -46,7 +48,7 @@ describe('SemanticNavigator Benchmark', () => {
           metadata: {
             type: 'reasoning',
             confidence: 0.8 + (thoughtIndex * 0.02),
-            tags: [`branch-${branchIndex}`, `thought-${thoughtIndex}`]
+            keyPoints: []
           }
         };
 
@@ -168,9 +170,11 @@ describe('SemanticNavigator Benchmark', () => {
         description: `Large test branch ${branchIndex}`,
         thoughtIds: [],
         thoughts: [],
-        timestamp: new Date(),
-        isComplete: false,
-        metadata: {}
+        state: 'active' as const,
+        priority: 0.5,
+        confidence: 0.5,
+        lastEvaluationIndex: 0,
+        childIds: new Set<string>()
       };
 
       for (let thoughtIndex = 0; thoughtIndex < 50; thoughtIndex++) {
@@ -183,7 +187,7 @@ describe('SemanticNavigator Benchmark', () => {
           metadata: {
             type: 'reasoning',
             confidence: 0.5 + (thoughtIndex * 0.01),
-            tags: [`large-branch-${branchIndex}`, `large-thought-${thoughtIndex}`]
+            keyPoints: [],
           }
         };
 

@@ -93,12 +93,12 @@ export class SemanticCompositeEvaluator extends BaseEvaluator {
 
     // Calculate weighted overall score
     combined.overallScore = 
-      combined.coherenceScore * this.weights.coherence +
-      (1 - combined.contradictionScore) * this.weights.contradiction + // Invert because lower is better
-      combined.informationGain * this.weights.informationGain +
-      combined.goalAlignment * this.weights.goalAlignment +
-      ((combined.confidenceGradient + 1) / 2) * this.weights.confidenceGradient + // Normalize to 0-1
-      (1 - combined.redundancyScore) * this.weights.redundancy; // Invert because lower is better
+      (combined.coherenceScore ?? 0) * this.weights.coherence +
+      (1 - (combined.contradictionScore ?? 0)) * this.weights.contradiction + // Invert because lower is better
+      (combined.informationGain ?? 0) * this.weights.informationGain +
+      (combined.goalAlignment ?? 0) * this.weights.goalAlignment +
+      (((combined.confidenceGradient ?? 0) + 1) / 2) * this.weights.confidenceGradient + // Normalize to 0-1
+      (1 - (combined.redundancyScore ?? 0)) * this.weights.redundancy; // Invert because lower is better
 
     return combined;
   }

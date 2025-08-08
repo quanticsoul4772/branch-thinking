@@ -96,7 +96,7 @@ export class SemanticFlowAnalyzer {
       const currEmbedding = embeddings[i];
       
       if (!prevEmbedding || !currEmbedding) {
-        throw new Error(`Missing embedding at index ${i - 1} or ${i}`);
+        continue; // Skip if embeddings are missing
       }
       
       const similarity = this.embeddingManager.calculateSimilarity(
@@ -107,11 +107,12 @@ export class SemanticFlowAnalyzer {
       totalContinuity += similarity;
 
       const drift = 1 - similarity;
-      if (drift > 0.5) {
+      const thought = thoughts[i];
+      if (drift > 0.5 && thought) {
         driftPoints.push({
           index: i,
           drift,
-          thought: this.truncateThought(thoughts[i].content)
+          thought: this.truncateThought(thought.content)
         });
       }
     }

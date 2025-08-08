@@ -50,14 +50,18 @@ export class SemanticCoherenceEvaluator extends BaseEvaluator {
 
     // Compare each thought with the previous one
     for (let i = 1; i < thoughts.length; i++) {
+      const prevThought = thoughts[i-1];
+      const currThought = thoughts[i];
+      if (!prevThought || !currThought) continue;
+      
       const similarity = this.useSemanticSimilarity
         ? await semanticSimilarity.calculateSimilarity(
-          thoughts[i-1].content,
-          thoughts[i].content
+          prevThought.content,
+          currThought.content
         )
         : this.calculateSimilarity(
-          thoughts[i-1].content,
-          thoughts[i].content
+          prevThought.content,
+          currThought.content
         );
       
       totalSimilarity += similarity;
@@ -112,14 +116,20 @@ export class SemanticRedundancyChecker extends BaseEvaluator {
     for (let i = 0; i < thoughts.length - 1; i++) {
       const endIndex = Math.min(i + windowSize + 1, thoughts.length);
       for (let j = i + 1; j < endIndex; j++) {
+        const thoughtI = thoughts[i];
+        const thoughtJ = thoughts[j];
+        if (!thoughtI || !thoughtJ) {
+          continue;
+        }
+        
         const similarity = this.useSemanticSimilarity
           ? await semanticSimilarity.calculateSimilarity(
-            thoughts[i].content, 
-            thoughts[j].content
+            thoughtI.content, 
+            thoughtJ.content
           )
           : this.calculateSimilarity(
-            thoughts[i].content, 
-            thoughts[j].content
+            thoughtI.content, 
+            thoughtJ.content
           );
         
         if (similarity > getConfig().evaluation.thresholds.similarity) {

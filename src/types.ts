@@ -12,7 +12,7 @@ export type EventType = 'thought_added' | 'branch_created' | 'cross_ref_added' |
 export interface ThoughtEvent {
   type: EventType;
   thoughtId?: string;
-  branchId?: string;
+  branchId?: string | undefined;
   timestamp: number;
   index: number;
   data?: any;
@@ -50,10 +50,10 @@ export interface EvaluationDelta {
 // Graph structure for branches
 export interface BranchNode {
   id: string;
-  description?: string; // Human-readable description
+  description?: string | undefined; // Human-readable description
   thoughtIds: string[]; // References to thought pool
   thoughts: ThoughtData[]; // Direct references for convenience
-  parentId?: string;
+  parentId?: string | undefined;
   childIds: Set<string>;
   state: BranchState;
   priority: number;
@@ -65,7 +65,7 @@ export interface BranchNode {
     keywords: string[];             // Top TF-IDF keywords
     thoughtCount: number;           // Number of thoughts in average
     lastUpdated: Date;
-  };
+  } | undefined;
 }
 
 // Simplified insight without redundant data
@@ -90,17 +90,17 @@ export interface CrossReference {
 // Main input interface remains similar for compatibility
 export interface BranchingThoughtInput {
   content: string;
-  branchId?: string;
-  parentBranchId?: string;
+  branchId?: string | undefined;
+  parentBranchId?: string | undefined;
   type: string;
-  confidence?: number;
-  keyPoints?: string[];
+  confidence?: number | undefined;
+  keyPoints?: string[] | undefined;
   crossRefs?: Array<{
     toBranch: string;
     type: CrossRefType;
     reason: string;
     strength: number;
-  }>;
+  }> | undefined;
 }
 
 // Export/Import format for streaming
@@ -135,7 +135,7 @@ export type BranchRole = 'explorer' | 'advocate' | 'skeptic' | 'synthesizer' | '
 
 export interface ThoughtBranch {
   id: string;
-  parentBranchId?: string;
+  parentBranchId?: string | undefined;
   state: BranchState;
   priority: number;
   confidence: number;

@@ -53,7 +53,10 @@ export class StatisticsHelper {
     branches.forEach(branch => {
       const state = branch.state as BranchState;
       if (state in branchStates) {
-        branchStates[state]++;
+        const currentCount = branchStates[state];
+        if (currentCount !== undefined) {
+          branchStates[state] = currentCount + 1;
+        }
       }
     });
     

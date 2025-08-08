@@ -66,7 +66,7 @@ export class CommandHandler {
   }
   
   async handleCommand(type: string, data: CommandData): Promise<CommandResult> {
-    logger.debug(`Handling command: ${type}`, data);
+    logger.debug(`Handling command: ${type}`, data as Record<string, unknown>);
     
     const command = this.commands.get(type);
     if (!command) {
@@ -86,7 +86,7 @@ export class CommandHandler {
     try {
       return await command.execute(data);
     } catch (error) {
-      logger.error(`Command execution failed: ${type}`, error);
+      logger.error(`Command execution failed: ${type}`, error instanceof Error ? error : { error: String(error) });
       return {
         content: [{
           type: 'text',

@@ -29,11 +29,15 @@ export class CoherenceEvaluator extends BaseEvaluator {
     const similarities: number[] = [];
     
     for (let i = 1; i < thoughts.length; i++) {
-      const similarity = await semanticSimilarity.calculateSimilarity(
-        thoughts[i-1].content,
-        thoughts[i].content
-      );
-      similarities.push(similarity);
+      const prev = thoughts[i-1];
+      const curr = thoughts[i];
+      if (prev && curr) {
+        const similarity = await semanticSimilarity.calculateSimilarity(
+          prev.content,
+          curr.content
+        );
+        similarities.push(similarity);
+      }
     }
     
     return similarities;
@@ -66,9 +70,12 @@ export class RedundancyChecker extends BaseEvaluator {
     // Compare each thought with all others
     for (let i = 0; i < thoughts.length; i++) {
       for (let j = i + 1; j < thoughts.length; j++) {
+        const thought1 = thoughts[i];
+        const thought2 = thoughts[j];
+        if (!thought1 || !thought2) continue;
         const similarity = await semanticSimilarity.calculateSimilarity(
-          thoughts[i].content,
-          thoughts[j].content
+          thought1.content,
+          thought2.content
         );
         
         // High similarity between non-consecutive thoughts indicates redundancy
@@ -112,7 +119,9 @@ export class InformationGainCalculator extends BaseEvaluator {
     const cumulativeContent: string[] = [];
     
     for (let i = 0; i < thoughts.length; i++) {
-      const currentThought = thoughts[i].content;
+      const thought = thoughts[i];
+      if (!thought) continue;
+      const currentThought = thought.content;
       
       if (i === 0) {
         gains.push(1.0); // First thought has full information gain
@@ -216,7 +225,7 @@ export class ConfidenceAnalyzer extends BaseEvaluator {
     
     const sumX = indices.reduce((a, b) => a + b, 0);
     const sumY = confidences.reduce((a, b) => a + b, 0);
-    const sumXY = indices.reduce((sum, x, i) => sum + x * confidences[i], 0);
+    const sumXY = indices.reduce((sum, x, i) => sum + x * (confidences[i] ?? 0), 0);
     const sumX2 = indices.reduce((sum, x) => sum + x * x, 0);
     
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
@@ -253,8 +262,12 @@ export class ContradictionDetector extends BaseEvaluator {
     
     // Simple negation detection
     for (let i = 0; i < thoughts.length; i++) {
+      const thoughtI = thoughts[i];
+      if (!thoughtI) continue;
       for (let j = i + 1; j < thoughts.length; j++) {
-        if (await this.areContradictory(thoughts[i], thoughts[j])) {
+        const thoughtJ = thoughts[j];
+        if (!thoughtJ) continue;
+        if (await this.areContradictory(thoughtI, thoughtJ)) {
           contradictionCount++;
         }
       }

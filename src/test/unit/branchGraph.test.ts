@@ -28,7 +28,6 @@ describe('BranchGraph Core Operations', () => {
       const params: AddThoughtParams = {
         content: 'Branch thought',
         type: 'hypothesis' as ThoughtType,
-        parentBranchId: 'main',
         confidence: 0.7
       };
 
@@ -101,7 +100,6 @@ describe('BranchGraph Core Operations', () => {
       const result1 = await graph.addThought({
         content: 'First thought',
         type: 'analysis' as ThoughtType,
-        parentBranchId: 'main'
       });
       thoughtId1 = result1.thoughtId;
       
@@ -114,7 +112,6 @@ describe('BranchGraph Core Operations', () => {
       const result2 = await graph.addThought({
         content: 'Second thought', 
         type: 'hypothesis' as ThoughtType,
-        parentBranchId: 'main'
       });
       
       branchId2 = branches.find(b => 
@@ -239,7 +236,6 @@ describe('BranchGraph Core Operations', () => {
       await graph.addThought({
         content: 'New branch thought',
         type: 'hypothesis' as ThoughtType,
-        parentBranchId: 'main'
       });
 
       const branches = graph.getAllBranches();
@@ -251,7 +247,6 @@ describe('BranchGraph Core Operations', () => {
       const result = await graph.addThought({
         content: 'Test branch',
         type: 'solution' as ThoughtType,
-        parentBranchId: 'main'
       });
 
       const branches = graph.getAllBranches();
@@ -261,7 +256,7 @@ describe('BranchGraph Core Operations', () => {
         // Verify branch has expected properties
         expect(newBranch.id).toBeDefined();
         expect(newBranch.thoughts.length).toBeGreaterThan(0);
-        expect(newBranch.parentBranchId).toBe('main');
+        expect(newBranch.parentId).toBe('main');
         
         // Verify branch can be retrieved individually
         const retrievedBranch = graph.getBranch(newBranch.id);

@@ -9,7 +9,6 @@
 import {
   BranchingThoughtInput,
   CrossRefType,
-  ThoughtData,
   BranchNode,
   BranchState
 } from './types.js';
@@ -235,7 +234,7 @@ export class BranchGraphValidator {
     const validatedPoints: string[] = [];
     
     for (let i = 0; i < keyPoints.length; i++) {
-      const point = keyPoints[i];
+      const point = keyPoints[i] as unknown;
       
       if (typeof point !== 'string') {
         throw new ValidationError(
@@ -336,7 +335,12 @@ export class BranchGraphValidator {
     }> = [];
 
     for (let i = 0; i < crossRefs.length; i++) {
-      const ref = crossRefs[i];
+      const ref = crossRefs[i] as {
+        toBranch?: unknown;
+        type?: unknown;
+        reason?: unknown;
+        strength?: unknown;
+      };
       
       if (!ref || typeof ref !== 'object') {
         throw new ValidationError(

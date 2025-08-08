@@ -146,8 +146,12 @@ export class EvaluationError extends BranchThinkingError {
 
   constructor(message: string, branchId?: string, thoughtId?: string) {
     super(message, 'EVALUATION_ERROR');
-    this.branchId = branchId;
-    this.thoughtId = thoughtId;
+    if (branchId !== undefined) {
+      this.branchId = branchId;
+    }
+    if (thoughtId !== undefined) {
+      this.thoughtId = thoughtId;
+    }
   }
 
   toJSON(): Record<string, unknown> {

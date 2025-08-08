@@ -109,7 +109,11 @@ export class SemanticSimilarityService {
     
     let dotProduct = 0;
     for (let i = 0; i < vec1.length; i++) {
-      dotProduct += vec1[i] * vec2[i];
+      const v1 = vec1[i];
+      const v2 = vec2[i];
+      if (v1 !== undefined && v2 !== undefined) {
+        dotProduct += v1 * v2;
+      }
     }
     
     // Since embeddings are normalized, dot product is cosine similarity
@@ -140,12 +144,19 @@ export class SemanticSimilarityService {
     // Calculate pairwise similarities
     const similarities: number[][] = [];
     for (let i = 0; i < embeddings.length; i++) {
-      similarities[i] = [];
+      const row: number[] = [];
+      similarities[i] = row;
       for (let j = 0; j < embeddings.length; j++) {
         if (i === j) {
-          similarities[i][j] = 1.0;
+          row[j] = 1.0;
         } else {
-          similarities[i][j] = this.cosineSimilarity(embeddings[i], embeddings[j]);
+          const emb1 = embeddings[i];
+          const emb2 = embeddings[j];
+          if (emb1 && emb2) {
+            row[j] = this.cosineSimilarity(emb1, emb2);
+          } else {
+            row[j] = 0;
+          }
         }
       }
     }

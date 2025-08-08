@@ -75,7 +75,11 @@ export class DialecticalSynthesizer {
     
     for (let i = 0; i < branches.length; i++) {
       for (let j = i + 1; j < branches.length; j++) {
-        pairs.push([branches[i], branches[j]]);
+        const branch1 = branches[i];
+        const branch2 = branches[j];
+        if (branch1 && branch2) {
+          pairs.push([branch1, branch2]);
+        }
       }
     }
     

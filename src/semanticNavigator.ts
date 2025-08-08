@@ -12,7 +12,7 @@ export interface SimilarThought {
   thoughtId: string;
   content: string;
   branchId: string;
-  branchDescription?: string;
+  branchDescription?: string | undefined;
   similarity: number;
   type: string;
   timestamp: Date;

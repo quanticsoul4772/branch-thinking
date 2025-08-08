@@ -134,7 +134,7 @@ export class StructuredErrorBuilder {
       const codeMatch = error.message.match(/^([A-Z_]+):\s*(.*)/);
       if (codeMatch) {
         const [, code, message] = codeMatch;
-        if (Object.values(StructuredErrorCode).includes(code as StructuredErrorCode)) {
+        if (code && message && Object.values(StructuredErrorCode).includes(code as StructuredErrorCode)) {
           return this.create(code as StructuredErrorCode, message);
         }
       }

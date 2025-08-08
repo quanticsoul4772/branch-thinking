@@ -84,6 +84,7 @@ export class ContradictionDetector {
    * Check if two texts have direct contradiction
    */
   private hasDirectContradiction(text1: string, text2: string): boolean {
+    if (!text1 || !text2) return false;
     const lower1 = text1.toLowerCase();
     const lower2 = text2.toLowerCase();
 
@@ -105,20 +106,28 @@ export class ContradictionDetector {
    * Check for negation pairs in texts
    */
   private checkNegationPairs(text1: string, text2: string): boolean {
-    return this.negationPairs.some(([term1, term2]) =>
-      (text1.includes(term1) && text2.includes(term2)) ||
-      (text1.includes(term2) && text2.includes(term1))
-    );
+    if (!text1 || !text2) return false;
+    const t1 = text1; // Ensure TypeScript knows these are defined
+    const t2 = text2;
+    return this.negationPairs.some(([term1, term2]) => {
+      if (!term1 || !term2) return false;
+      return (t1.includes(term1) && t2.includes(term2)) ||
+             (t1.includes(term2) && t2.includes(term1));
+    });
   }
 
   /**
    * Check for opposing quantifiers in texts
    */
   private checkOpposingQuantifiers(text1: string, text2: string): boolean {
-    return this.opposingQuantifiers.some(([q1, q2]) =>
-      (text1.includes(q1) && text2.includes(q2)) ||
-      (text1.includes(q2) && text2.includes(q1))
-    );
+    if (!text1 || !text2) return false;
+    const t1 = text1; // Ensure TypeScript knows these are defined
+    const t2 = text2;
+    return this.opposingQuantifiers.some(([q1, q2]) => {
+      if (!q1 || !q2) return false;
+      return (t1.includes(q1) && t2.includes(q2)) ||
+             (t1.includes(q2) && t2.includes(q1));
+    });
   }
 
   /**

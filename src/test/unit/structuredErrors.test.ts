@@ -141,13 +141,13 @@ describe('StructuredErrors', () => {
 
     it('should create error result', () => {
       const result = StructuredResultBuilder.error(
-        StructuredErrorCode.VALIDATION_ERROR,
+        StructuredErrorCode.INVALID_INPUT,
         'Validation failed'
       );
       
       expect(result).toEqual({
         ok: false,
-        code: 'VALIDATION_ERROR',
+        code: 'INVALID_INPUT',
         message: 'Validation failed',
         retryable: false
       });

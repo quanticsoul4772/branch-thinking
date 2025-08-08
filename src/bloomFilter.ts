@@ -80,7 +80,9 @@ export class BloomFilter {
   private setBit(index: number): void {
     const byteIndex = Math.floor(index / 8);
     const bitIndex = index % 8;
-    this.bits[byteIndex] |= (1 << bitIndex);
+    if (this.bits && byteIndex < this.bits.length && this.bits[byteIndex] !== undefined) {
+      this.bits[byteIndex] |= (1 << bitIndex);
+    }
   }
 
   /**
@@ -102,7 +104,14 @@ export class BloomFilter {
   private isBitSet(index: number): boolean {
     const byteIndex = Math.floor(index / 8);
     const bitIndex = index % 8;
-    return (this.bits[byteIndex] & (1 << bitIndex)) !== 0;
+    if (!this.bits || byteIndex >= this.bits.length) {
+      return false;
+    }
+    const byte = this.bits[byteIndex];
+    if (byte === undefined) {
+      return false;
+    }
+    return (byte & (1 << bitIndex)) !== 0;
   }
 
   /**
@@ -187,10 +196,13 @@ export class ContradictionBloomFilter {
     const concepts: string[] = [];
     
     for (let i = 0; i < words.length; i++) {
-      concepts.push(words[i]);
-      
-      if (i < words.length - 1) {
-        concepts.push(`${words[i]}_${words[i + 1]}`);
+      const word = words[i];
+      if (word) {
+        concepts.push(word);
+        
+        if (i < words.length - 1 && words[i + 1]) {
+          concepts.push(`${word}_${words[i + 1]}`);
+        }
       }
     }
     

@@ -107,8 +107,14 @@ export class BranchGraphAnalytics {
     // Compare all pairs
     for (let i = 0; i < branches.length; i++) {
       for (let j = i + 1; j < branches.length; j++) {
-        const profile1 = branches[i].semanticProfile;
-        const profile2 = branches[j].semanticProfile;
+        const branchI = branches[i];
+        const branchJ = branches[j];
+        if (!branchI || !branchJ) {
+          continue;
+        }
+        
+        const profile1 = branchI.semanticProfile;
+        const profile2 = branchJ.semanticProfile;
         
         if (!profile1 || !profile2) {
           continue;
@@ -118,8 +124,8 @@ export class BranchGraphAnalytics {
         const similarity = this.calculateProfileSimilarity(profile1, profile2);
         
         comparisons.push({
-          branch1: branches[i].id,
-          branch2: branches[j].id,
+          branch1: branchI.id,
+          branch2: branchJ.id,
           similarity,
           sharedConcepts
         });
@@ -205,6 +211,10 @@ export class BranchGraphAnalytics {
       for (let j = i + 1; j < branches.length; j++) {
         const branch1 = branches[i];
         const branch2 = branches[j];
+        
+        if (!branch1 || !branch2) {
+          continue;
+        }
         
         if (!branch1.semanticProfile || !branch2.semanticProfile) {
           continue;

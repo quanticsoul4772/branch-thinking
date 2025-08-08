@@ -1,6 +1,16 @@
 import pino from 'pino';
 import chalk from 'chalk';
 
+declare const process: {
+  env: {
+    LOG_LEVEL?: string;
+    LOG_FORMAT?: string;
+  };
+  stderr: {
+    write: (msg: string) => void;
+  };
+};
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -22,17 +32,22 @@ export class Logger {
     this.useJsonOutput = process.env.LOG_FORMAT === 'json';
     
     // Configure pino for structured logging
-    this.pinoLogger = pino({
-      level: this.mapLogLevel(this.logLevel),
-      transport: this.useJsonOutput ? undefined : {
+    const config: pino.LoggerOptions = {
+      level: this.mapLogLevel(this.logLevel)
+    };
+    
+    if (!this.useJsonOutput) {
+      config.transport = {
         target: 'pino-pretty',
         options: {
           colorize: true,
           translateTime: 'HH:MM:ss Z',
           ignore: 'pid,hostname'
         }
-      }
-    });
+      };
+    }
+    
+    this.pinoLogger = pino(config);
   }
 
   private mapLogLevel(level: LogLevel): string {
@@ -52,7 +67,7 @@ export class Logger {
     return Logger.instance;
   }
 
-  debug(message: string, context?: any): void {
+  debug(message: string, context?: Record<string, unknown>): void {
     if (this.logLevel <= LogLevel.DEBUG) {
       if (this.useJsonOutput) {
         this.pinoLogger.debug(context, message);
@@ -62,7 +77,7 @@ export class Logger {
     }
   }
 
-  info(message: string, context?: any): void {
+  info(message: string, context?: Record<string, unknown>): void {
     if (this.logLevel <= LogLevel.INFO) {
       if (this.useJsonOutput) {
         this.pinoLogger.info(context, message);
@@ -72,7 +87,7 @@ export class Logger {
     }
   }
 
-  warn(message: string, context?: any): void {
+  warn(message: string, context?: Record<string, unknown>): void {
     if (this.logLevel <= LogLevel.WARN) {
       if (this.useJsonOutput) {
         this.pinoLogger.warn(context, message);
@@ -82,7 +97,7 @@ export class Logger {
     }
   }
 
-  error(message: string, error?: any): void {
+  error(message: string, error?: Error | Record<string, unknown>): void {
     if (this.logLevel <= LogLevel.ERROR) {
       if (this.useJsonOutput) {
         this.pinoLogger.error(error, message);

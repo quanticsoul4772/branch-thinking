@@ -176,6 +176,10 @@ export class SerializationHelper {
     
     const [, id, timestamp, type, confidence, content] = match;
     
+    if (!content || !type || !confidence) {
+      throw new Error('Invalid thought data extracted from match');
+    }
+    
     await graph.addThought({
       content,
       branchId,

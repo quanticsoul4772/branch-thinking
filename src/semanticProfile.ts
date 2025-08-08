@@ -192,8 +192,11 @@ export class SemanticProfileManager {
     
     // Calculate new average: avg_new = (avg_old * n + new_value) / (n + 1)
     for (let i = 0; i < profile.centerEmbedding.length; i++) {
-      profile.centerEmbedding[i] = 
-        (profile.centerEmbedding[i] * n + newEmbedding[i]) / (n + 1);
+      const currentValue = profile.centerEmbedding[i];
+      const newValue = newEmbedding[i];
+      if (currentValue !== undefined && newValue !== undefined) {
+        profile.centerEmbedding[i] = (currentValue * n + newValue) / (n + 1);
+      }
     }
     
     profile.thoughtCount = n + 1;
@@ -326,6 +329,10 @@ export class SemanticProfileManager {
       for (let j = i + 1; j < branches.length; j++) {
         const branch1 = branches[i];
         const branch2 = branches[j];
+        
+        if (!branch1 || !branch2) {
+          continue;
+        }
         
         if (!branch1.semanticProfile || !branch2.semanticProfile) {
           continue;

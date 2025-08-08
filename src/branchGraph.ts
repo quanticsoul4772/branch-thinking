@@ -23,17 +23,17 @@ import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './ut
 
 export interface AddThoughtParams {
   content: string;
-  branchId?: string;
+  branchId?: string | undefined;
   type: string;
-  confidence?: number;
-  keyPoints?: string[];
-  parentBranchId?: string;
+  confidence?: number | undefined;
+  keyPoints?: string[] | undefined;
+  parentBranchId?: string | undefined;
   crossRefs?: Array<{
     toBranch: string;
     type: CrossRefType;
     reason: string;
     strength: number;
-  }>;
+  }> | undefined;
 }
 
 export interface AddThoughtResult {
@@ -107,7 +107,10 @@ export class BranchGraph {
     // Handle cross-references
     this.processCrossReferences(actualBranchId, params.crossRefs, thoughtId);
     
-    return { thoughtId, overlapWarning };
+    return { 
+      thoughtId, 
+      ...(overlapWarning && { overlapWarning })
+    };
   }
 
   private prepareAddThoughtParams(input: ValidatedThoughtInput): AddThoughtParams {

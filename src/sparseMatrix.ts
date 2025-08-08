@@ -58,8 +58,12 @@ export class SparseMatrix {
   getNonZeroEntries(): SparseEntry[] {
     const entries: SparseEntry[] = [];
     this.data.forEach((value, key) => {
-      const [row, col] = key.split(',').map(Number);
-      entries.push({ row, col, value });
+      const parts = key.split(',').map(Number);
+      const row = parts[0];
+      const col = parts[1];
+      if (row !== undefined && col !== undefined) {
+        entries.push({ row, col, value });
+      }
     });
     return entries;
   }
@@ -193,10 +197,11 @@ export class SimilarityMatrix {
     const row = this.matrix.getRow(idx);
 
     for (let i = 0; i < row.length; i++) {
-      if (i !== idx && row[i] > 0) {
+      const similarity = row[i];
+      if (similarity !== undefined && i !== idx && similarity > 0) {
         const otherId = this.indexToId.get(i);
         if (otherId) {
-          similarities.push({ thoughtId: otherId, similarity: row[i] });
+          similarities.push({ thoughtId: otherId, similarity });
         }
       }
     }
@@ -222,7 +227,8 @@ export class SimilarityMatrix {
 
       const row = this.matrix.getRow(index);
       for (let i = 0; i < row.length; i++) {
-        if (i !== index && row[i] >= minSimilarity && !visited.has(i)) {
+        const similarity = row[i];
+        if (similarity !== undefined && i !== index && similarity >= minSimilarity && !visited.has(i)) {
           dfs(i, cluster);
         }
       }

@@ -256,8 +256,9 @@ export class ConceptExtractor {
     for (const sentence of sentences) {
       const words = sentence.trim().split(/\s+/);
       for (let i = 1; i < words.length; i++) {
-        if (/^[A-Z][a-z]+/.test(words[i])) {
-          entities.add(words[i]);
+        const word = words[i];
+        if (word && /^[A-Z][a-z]+/.test(word)) {
+          entities.add(word);
         }
       }
     }

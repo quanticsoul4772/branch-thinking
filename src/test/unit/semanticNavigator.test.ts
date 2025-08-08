@@ -43,7 +43,11 @@ describe('SemanticNavigator', () => {
       // Simple mock similarity based on embedding differences
       let similarity = 0;
       for (let i = 0; i < Math.min(a.length, b.length); i++) {
-        similarity += (1 - Math.abs(a[i] - b[i]));
+        const aVal = a[i];
+        const bVal = b[i];
+        if (aVal !== undefined && bVal !== undefined) {
+          similarity += (1 - Math.abs(aVal - bVal));
+        }
       }
       return Math.max(0, Math.min(1, similarity / Math.min(a.length, b.length)));
     });
@@ -62,7 +66,7 @@ describe('SemanticNavigator', () => {
     branchConfigs.forEach((config, branchIndex) => {
       const branch: BranchNode = {
         id: config.id,
-        ...(branchIndex > 0 && { parentId: branchConfigs[branchIndex - 1].id }),
+        parentId: branchIndex > 0 ? branchConfigs[branchIndex - 1]?.id : undefined,
         description: `Test branch ${branchIndex + 1}`,
         thoughtIds: [],
         thoughts: [],
@@ -80,7 +84,7 @@ describe('SemanticNavigator', () => {
           id: thoughtId,
           content: `Thought ${thoughtIndex} content for ${config.id}`,
           branchId: config.id,
-          timestamp: new Date(),
+          timestamp: Date.now(),
           metadata: {
             type: 'reasoning',
             confidence: 0.7 + (thoughtIndex * 0.05),
@@ -230,7 +234,7 @@ describe('SemanticNavigator', () => {
         id: 'single-thought',
         content: 'Single thought',
         branchId: 'single-branch',
-        timestamp: new Date(),
+        timestamp: Date.now(),
         metadata: { type: 'reasoning', confidence: 0.8, keyPoints: [] }
       };
 
