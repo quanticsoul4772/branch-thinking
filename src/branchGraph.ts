@@ -622,9 +622,9 @@ export class BranchGraph {
     if (/\s/.test(branchId)) {
       throw new Error(`Parameter '${paramName}' cannot contain whitespace`);
     }
-    
-    if (branchId.length > 100) {
-      throw new Error(`Parameter '${paramName}' must not exceed 100 characters`);
+    if (branchId.length > BranchGraph.MAX_BRANCH_ID_LENGTH) {
+      throw new Error(`Parameter '${paramName}' must not exceed ${BranchGraph.MAX_BRANCH_ID_LENGTH} characters`);
+    }
     }
   }
   
