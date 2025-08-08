@@ -68,7 +68,8 @@ describe('Performance Tests for Large Inputs', () => {
       } catch (error) {
         // If it throws a validation error due to length limits, that's acceptable
         expect(error).toHaveProperty('name');
-        expect(error.name === 'ValidationError').toBeTruthy();
+        expect(error.name).toBe('ValidationError');
+        expect(error.message).toMatch(/length|size|too large/i);
       }
     });
   });
