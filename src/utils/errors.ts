@@ -31,22 +31,42 @@ export class AppError extends Error {
   }
 }
 
-import { StructuredErrorBuilder, toMCPResponse } from './structuredErrors.js';
-
 export function handleError(error: unknown): { content: Array<{ type: string; text: string }>; isError: boolean } {
   if (error instanceof AppError) {
-    // Convert legacy AppError to structured format
-    const structuredError = StructuredErrorBuilder.create(
-      error.code as any,
-      error.message,
-      error.statusCode >= 500 // Server errors are retryable
-    );
-    return toMCPResponse(structuredError);
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(error.toJSON(), null, 2)
+      }],
+      isError: true
+    };
   }
 
-  // Handle any other error
-  const structuredError = StructuredErrorBuilder.fromError(error);
-  return toMCPResponse(structuredError);
+  if (error instanceof Error) {
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          error: error.message,
+          code: ErrorCode.INTERNAL_ERROR,
+          status: 'failed'
+        }, null, 2)
+      }],
+      isError: true
+    };
+  }
+
+  return {
+    content: [{
+      type: 'text',
+      text: JSON.stringify({
+        error: String(error),
+        code: ErrorCode.INTERNAL_ERROR,
+        status: 'failed'
+      }, null, 2)
+    }],
+    isError: true
+  };
 }
 
 export function assertDefined<T>(value: T | null | undefined, errorMessage: string): T {

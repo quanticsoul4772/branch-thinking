@@ -151,7 +151,9 @@ export class BranchGraph {
    */
   private async updateSemanticProfile(branchId: string, content: string, thoughtId: string): Promise<void> {
     const branch = this.storage.getBranch(branchId);
-    if (!branch) return;
+    if (!branch) {
+      return;
+    }
     
     await semanticProfileManager.updateBranchProfile(branch, content, thoughtId);
   }
@@ -164,13 +166,17 @@ export class BranchGraph {
     content: string
   ): Promise<AddThoughtResult['overlapWarning']> {
     const currentBranch = this.storage.getBranch(currentBranchId);
-    if (!currentBranch?.semanticProfile) return undefined;
+    if (!currentBranch?.semanticProfile) {
+      return undefined;
+    }
     
     const allBranches = this.storage.getAllBranches();
     const { branch: mostSimilarBranch, similarity: maxSimilarity } = 
       await semanticProfileManager.findMostSimilarBranch(content, allBranches, currentBranchId);
     
-    if (!mostSimilarBranch) return undefined;
+    if (!mostSimilarBranch) {
+      return undefined;
+    }
     
     const currentSimilarity = await semanticProfileManager.calculateThoughtToBranchSimilarity(
       content, 
@@ -178,7 +184,9 @@ export class BranchGraph {
     );
     
     // Only warn if significantly more similar to another branch
-    if (maxSimilarity <= currentSimilarity + 0.15) return undefined;
+    if (maxSimilarity <= currentSimilarity + 0.15) {
+      return undefined;
+    }
     
     return {
       suggestedBranch: mostSimilarBranch.id,
@@ -227,7 +235,9 @@ export class BranchGraph {
     crossRefs: AddThoughtParams['crossRefs'],
     thoughtId: string
   ): void {
-    if (!crossRefs) return;
+    if (!crossRefs) {
+      return;
+    }
     
     crossRefs.forEach(ref => {
       this.addCrossReference({
@@ -327,11 +337,15 @@ export class BranchGraph {
     const thought1 = this.storage.getThought(thoughtId1);
     const thought2 = this.storage.getThought(thoughtId2);
     
-    if (!thought1 || !thought2) return 0;
+    if (!thought1 || !thought2) {
+      return 0;
+    }
     
     // Check cache first
     const cached = this.similarityMatrix.getSimilarity(thoughtId1, thoughtId2);
-    if (cached > 0) return cached;
+    if (cached > 0) {
+      return cached;
+    }
     
     // Calculate new similarity
     const similarity = this.analytics.computeCosineSimilarity(thought1.content, thought2.content);

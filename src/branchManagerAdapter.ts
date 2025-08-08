@@ -158,7 +158,9 @@ export class BranchManagerAdapter {
    */
   async evaluateBranch(branchId: string): Promise<EvaluationResult | null> {
     const branch = this.graph.getBranch(branchId);
-    if (!branch) return null;
+    if (!branch) {
+      return null;
+    }
     
     return await this.evaluator.evaluateIncremental(this.graph, branchId);
   }

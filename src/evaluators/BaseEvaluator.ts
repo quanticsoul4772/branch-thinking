@@ -64,7 +64,9 @@ export abstract class BaseEvaluator {
    * Calculate average of an array of numbers
    */
   protected calculateAverage(values: number[]): number {
-    if (values.length === 0) return 0;
+    if (values.length === 0) {
+      return 0;
+    }
     const sum = values.reduce((a, b) => a + b, 0);
     return sum / values.length;
   }
@@ -73,7 +75,9 @@ export abstract class BaseEvaluator {
    * Normalize a value to 0-1 range
    */
   protected normalize(value: number, min: number, max: number): number {
-    if (max <= min) return 0.5;
+    if (max <= min) {
+      return 0.5;
+    }
     return Math.max(0, Math.min(1, (value - min) / (max - min)));
   }
 }

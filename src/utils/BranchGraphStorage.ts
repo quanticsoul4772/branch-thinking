@@ -39,7 +39,9 @@ export class BranchGraphStorage {
     confidence: number;
     keyPoints: string[];
   }): Promise<void> {
-    if (this.hasThought(data.thoughtId)) return;
+    if (this.hasThought(data.thoughtId)) {
+      return;
+    }
     
     const thought: ThoughtData = {
       id: data.thoughtId,
@@ -118,7 +120,9 @@ export class BranchGraphStorage {
   addThoughtToBranch(thoughtId: string, branchId: string): void {
     const branch = this.getBranch(branchId);
     const thought = this.getThought(thoughtId);
-    if (!branch || !thought) return;
+    if (!branch || !thought) {
+      return;
+    }
     
     branch.thoughtIds.push(thoughtId);
     branch.thoughts.push(thought);
@@ -136,7 +140,9 @@ export class BranchGraphStorage {
    */
   getRecentThoughts(branchId: string, count: number): ThoughtData[] {
     const branch = this.getBranch(branchId);
-    if (!branch) return [];
+    if (!branch) {
+      return [];
+    }
     
     return branch.thoughts.slice(-count);
   }
@@ -160,7 +166,9 @@ export class BranchGraphStorage {
    */
   toLegacyBranch(branchId: string): any {
     const branch = this.getBranch(branchId);
-    if (!branch) return null;
+    if (!branch) {
+      return null;
+    }
     
     return {
       id: branch.id,

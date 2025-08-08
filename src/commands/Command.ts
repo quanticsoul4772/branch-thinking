@@ -26,7 +26,7 @@ export abstract class Command {
   protected createSuccessResponse(data: any): CommandResult {
     return {
       content: [{
-        type: "text",
+        type: 'text',
         text: JSON.stringify(data, null, 2)
       }]
     };
@@ -36,7 +36,7 @@ export abstract class Command {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       content: [{
-        type: "text",
+        type: 'text',
         text: JSON.stringify({
           error: errorMessage,
           status: 'failed'

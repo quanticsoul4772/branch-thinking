@@ -1,4 +1,4 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 /**
  * Create the tool definition for the branching thought tool
@@ -6,7 +6,7 @@ import { Tool } from "@modelcontextprotocol/sdk/types.js";
  */
 export function createToolDefinition(): Tool {
   return {
-    name: "branch-thinking",
+    name: 'branch-thinking',
     description: `A tool for managing multiple branches of thought with insights and cross-references.
     
 Each thought can:
@@ -47,95 +47,95 @@ Commands:
 - jumpToRelated [thoughtId, limit?]: Jump to related thoughts from current position
 - semanticPath [fromThoughtId, toThoughtId]: Find semantic path between two thoughts`,
     inputSchema: {
-      type: "object",
+      type: 'object',
       anyOf: [
-        { required: ["content", "type"] },
-        { required: ["command"] }
+        { required: ['content', 'type'] },
+        { required: ['command'] }
       ],
       properties: {
         content: {
-          type: "string",
-          description: "The thought content"
+          type: 'string',
+          description: 'The thought content'
         },
         type: {
-          type: "string",
-          description: "Type of thought (e.g., 'analysis', 'hypothesis', 'observation')"
+          type: 'string',
+          description: 'Type of thought (e.g., \'analysis\', \'hypothesis\', \'observation\')'
         },
         branchId: {
-          type: "string",
-          description: "Optional: ID of the branch (generated if not provided)"
+          type: 'string',
+          description: 'Optional: ID of the branch (generated if not provided)'
         },
         parentBranchId: {
-          type: "string",
-          description: "Optional: ID of the parent branch"
+          type: 'string',
+          description: 'Optional: ID of the parent branch'
         },
         confidence: {
-          type: "number",
-          description: "Optional: Confidence score (0-1)"
+          type: 'number',
+          description: 'Optional: Confidence score (0-1)'
         },
         keyPoints: {
-          type: "array",
-          items: { type: "string" },
-          description: "Optional: Key points identified in the thought"
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Optional: Key points identified in the thought'
         },
         crossRefs: {
-          type: "array",
-          description: "Optional: Cross-references to other branches",
+          type: 'array',
+          description: 'Optional: Cross-references to other branches',
           items: {
-            type: "object",
+            type: 'object',
             properties: {
-              toBranch: { type: "string" },
-              type: { type: "string" },
-              reason: { type: "string" },
-              strength: { type: "number" }
+              toBranch: { type: 'string' },
+              type: { type: 'string' },
+              reason: { type: 'string' },
+              strength: { type: 'number' }
             }
           }
         },
         command: {
-          type: "object",
-          description: "Optional: Navigation command",
+          type: 'object',
+          description: 'Optional: Navigation command',
           properties: {
             type: {
-              type: "string",
+              type: 'string',
               enum: [
-                "list", "focus", "history", "export", "import", "setGoal", 
-                "evaluate", "statistics", "findContradictions", "findStrongestPaths", 
-                "detectCircular", "prune", "toggleAutoEval", "configAutoEval", 
-                "suggestTools", "compareProfiles", "suggestMerges", "detectDrift",
-                "generateCounterfactuals", "detectKnowledgeGaps", "synthesizeDialectical",
-                "findSimilar", "jumpToRelated", "semanticPath"
+                'list', 'focus', 'history', 'export', 'import', 'setGoal', 
+                'evaluate', 'statistics', 'findContradictions', 'findStrongestPaths', 
+                'detectCircular', 'prune', 'toggleAutoEval', 'configAutoEval', 
+                'suggestTools', 'compareProfiles', 'suggestMerges', 'detectDrift',
+                'generateCounterfactuals', 'detectKnowledgeGaps', 'synthesizeDialectical',
+                'findSimilar', 'jumpToRelated', 'semanticPath'
               ],
-              description: "Command type"
+              description: 'Command type'
             },
             branchId: {
-              type: "string",
-              description: "Branch ID for commands that require it"
+              type: 'string',
+              description: 'Branch ID for commands that require it'
             },
             goal: {
-              type: "string",
-              description: "Goal for setGoal command"
+              type: 'string',
+              description: 'Goal for setGoal command'
             },
             data: {
-              type: "object",
-              description: "Data for import command (entities and relations arrays) or parameters for other commands",
+              type: 'object',
+              description: 'Data for import command (entities and relations arrays) or parameters for other commands',
               properties: {
-                entities: { type: "array" },
-                relations: { type: "array" },
-                threshold: { type: "number" },
-                limit: { type: "number" },
-                thoughtId: { type: "string" },
-                fromThoughtId: { type: "string" },
-                toThoughtId: { type: "string" },
-                branch1Id: { type: "string" },
-                branch2Id: { type: "string" }
+                entities: { type: 'array' },
+                relations: { type: 'array' },
+                threshold: { type: 'number' },
+                limit: { type: 'number' },
+                thoughtId: { type: 'string' },
+                fromThoughtId: { type: 'string' },
+                toThoughtId: { type: 'string' },
+                branch1Id: { type: 'string' },
+                branch2Id: { type: 'string' }
               }
             },
             query: {
-              type: "string",
-              description: "Query string for findStrongestPaths or findSimilar command"
+              type: 'string',
+              description: 'Query string for findStrongestPaths or findSimilar command'
             }
           },
-          required: ["type"]
+          required: ['type']
         }
       }
     }

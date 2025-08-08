@@ -35,9 +35,15 @@ export class EvaluationHelper {
   private determineQuality(score: number): 'excellent' | 'good' | 'moderate' | 'poor' {
     const config = getConfig();
     
-    if (score > config.evaluation.quality.excellent) return 'excellent';
-    if (score > config.evaluation.quality.good) return 'good';
-    if (score > config.evaluation.quality.moderate) return 'moderate';
+    if (score > config.evaluation.quality.excellent) {
+      return 'excellent';
+    }
+    if (score > config.evaluation.quality.good) {
+      return 'good';
+    }
+    if (score > config.evaluation.quality.moderate) {
+      return 'moderate';
+    }
     return 'poor';
   }
   
@@ -116,7 +122,9 @@ export class EvaluationHelper {
     // Add suggestions for identified issues
     issues.forEach(issue => {
       const suggestion = issueSuggestionMap[issue];
-      if (suggestion) suggestions.push(suggestion);
+      if (suggestion) {
+        suggestions.push(suggestion);
+      }
     });
     
     // Add quality-based suggestions

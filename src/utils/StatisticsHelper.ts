@@ -86,7 +86,9 @@ export class StatisticsHelper {
    * Get the size of the largest cluster
    */
   private getLargestClusterSize(clusters: any[]): number {
-    if (clusters.length === 0) return 0;
+    if (clusters.length === 0) {
+      return 0;
+    }
     return Math.max(...clusters.map((c: string[]) => c.length));
   }
   

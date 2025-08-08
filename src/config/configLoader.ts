@@ -280,17 +280,17 @@ export class ConfigLoader {
    */
   exportConfig(format: 'json' | 'yaml' | 'env' = 'json'): string {
     switch (format) {
-      case 'json':
-        return JSON.stringify(this.config, null, 2);
+    case 'json':
+      return JSON.stringify(this.config, null, 2);
       
-      case 'yaml':
-        return this.toYaml(this.config);
+    case 'yaml':
+      return this.toYaml(this.config);
       
-      case 'env':
-        return this.toEnv(this.config);
+    case 'env':
+      return this.toEnv(this.config);
       
-      default:
-        throw new Error(`Unsupported format: ${format}`);
+    default:
+      throw new Error(`Unsupported format: ${format}`);
     }
   }
 

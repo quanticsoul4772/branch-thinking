@@ -67,7 +67,9 @@ export class AnalysisHelper {
     const results: Array<{branch: any, score: number}> = [];
     
     for (const branch of branches) {
-      if (branch.state !== 'active' && branch.state !== 'completed') continue;
+      if (branch.state !== 'active' && branch.state !== 'completed') {
+        continue;
+      }
       
       const result = await evaluator.evaluateIncremental(graph, branch.id);
       const legacyBranch = graph.toLegacyBranch(branch.id);
@@ -98,7 +100,9 @@ export class AnalysisHelper {
     const results: Array<{path: string[], branch: string}> = [];
     
     for (const pattern of patterns) {
-      if (!pattern.thoughtIds || pattern.thoughtIds.length === 0) continue;
+      if (!pattern.thoughtIds || pattern.thoughtIds.length === 0) {
+        continue;
+      }
       
       // Find the branch containing the first thought in the pattern
       const firstThoughtId = pattern.thoughtIds[0];
@@ -132,7 +136,9 @@ export class AnalysisHelper {
     let prunedCount = 0;
     
     for (const branch of branches) {
-      if (branch.state !== 'active') continue;
+      if (branch.state !== 'active') {
+        continue;
+      }
       
       const result = await evaluator.evaluateIncremental(graph, branch.id);
       

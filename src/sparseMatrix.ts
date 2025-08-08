@@ -213,7 +213,9 @@ export class SimilarityMatrix {
     const clusters: string[][] = [];
 
     const dfs = (index: number, cluster: number[]): void => {
-      if (visited.has(index)) return;
+      if (visited.has(index)) {
+        return;
+      }
       visited.add(index);
       cluster.push(index);
 

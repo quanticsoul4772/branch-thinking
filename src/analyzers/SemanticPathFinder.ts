@@ -116,7 +116,9 @@ export class SemanticPathFinder {
     let bestScore = -1;
 
     for (const [thoughtId, data] of thoughtEmbeddings) {
-      if (visited.has(thoughtId)) continue;
+      if (visited.has(thoughtId)) {
+        continue;
+      }
 
       const similarityToTarget = this.embeddingManager.calculateSimilarity(
         data.embedding,

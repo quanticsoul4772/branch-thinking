@@ -37,7 +37,9 @@ export class SemanticSimilarityService {
    * Initialize the embedding model
    */
   async initialize(): Promise<void> {
-    if (this.initialized) return;
+    if (this.initialized) {
+      return;
+    }
     
     try {
       // Silently initialize the model with all output suppressed

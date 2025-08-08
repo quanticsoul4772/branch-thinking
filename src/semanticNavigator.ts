@@ -353,7 +353,9 @@ export class SemanticNavigator {
     let cumulativeDistance = 0;
     
     for (let step = 0; step < maxSteps; step++) {
-      if (this.isPathComplete(path, targetId)) break;
+      if (this.isPathComplete(path, targetId)) {
+        break;
+      }
       
       const result = await this.expandPath(
         graph,
@@ -364,12 +366,16 @@ export class SemanticNavigator {
         cumulativeDistance
       );
       
-      if (!result) break;
+      if (!result) {
+        break;
+      }
       
       currentEmbedding = result.embedding;
       cumulativeDistance = result.distance;
       
-      if (result.thoughtId === targetId) break;
+      if (result.thoughtId === targetId) {
+        break;
+      }
     }
   }
   

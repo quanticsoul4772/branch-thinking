@@ -25,7 +25,7 @@ export class EvaluateCommand extends Command {
   
   private interpretEvaluation(result: any): string {
     const { overallScore, coherenceScore, contradictionScore, redundancyScore, 
-            informationGain, goalAlignment } = result;
+      informationGain, goalAlignment } = result;
     
     let interpretation = `Overall Score: ${overallScore.toFixed(2)} - `;
     
@@ -40,11 +40,21 @@ export class EvaluateCommand extends Command {
     }
     
     const issues = [];
-    if (coherenceScore < 0.5) issues.push('low coherence');
-    if (contradictionScore > 0.5) issues.push('contradictions detected');
-    if (redundancyScore > 0.5) issues.push('high redundancy');
-    if (informationGain < 0.3) issues.push('low information gain');
-    if (goalAlignment < 0.5) issues.push('poor goal alignment');
+    if (coherenceScore < 0.5) {
+      issues.push('low coherence');
+    }
+    if (contradictionScore > 0.5) {
+      issues.push('contradictions detected');
+    }
+    if (redundancyScore > 0.5) {
+      issues.push('high redundancy');
+    }
+    if (informationGain < 0.3) {
+      issues.push('low information gain');
+    }
+    if (goalAlignment < 0.5) {
+      issues.push('poor goal alignment');
+    }
     
     if (issues.length > 0) {
       interpretation += ` (Issues: ${issues.join(', ')})`;
