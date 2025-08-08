@@ -133,7 +133,7 @@ export class BranchGraphValidator {
     }
 
     const config = getConfig();
-    const maxLength = config?.validation?.maxContentLength || config?.display?.thoughtCharLimit || 10000;
+    const maxLength = config?.evaluation?.maxContentLength || config?.display?.thoughtCharLimit || 10000;
     
     if (trimmedContent.length > maxLength) {
       throw new ValidationError(
@@ -537,7 +537,7 @@ export class BranchGraphValidator {
       );
     }
 
-    const maxAllowedDepth = getConfig().validation?.maxTraversalDepth || 1000;
+    const maxAllowedDepth = getConfig().evaluation?.maxTraversalDepth || 1000;
     if (depth > maxAllowedDepth) {
       throw new ValidationError(
         `Max depth cannot exceed ${maxAllowedDepth}`,
@@ -573,7 +573,7 @@ export class BranchGraphValidator {
       );
     }
 
-    const maxCount = getConfig().validation?.maxResultCount || 1000;
+    const maxCount = getConfig().evaluation?.maxResultCount || 1000;
     if (count > maxCount) {
       throw new ValidationError(
         `Count cannot exceed ${maxCount}`,
