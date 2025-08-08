@@ -206,7 +206,8 @@ describe('BranchGraph Core Operations', () => {
       }
 
       const circularPatterns = graph.detectCircularReasoning();
-      expect(circularPatterns).toBeDefined();
+      expect(Array.isArray(circularPatterns)).toBe(true);
+      expect(circularPatterns.length).toBeGreaterThan(0);
     });
 
     it('should handle independent statements without circular reasoning', () => {
