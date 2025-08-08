@@ -573,7 +573,7 @@ export class BranchGraphValidator {
       );
     }
 
-    const maxCount = getConfig().display?.historyThoughtsCount * 10 || 1000;
+    const maxCount = getConfig().validation?.maxResultCount || 1000;
     if (count > maxCount) {
       throw new ValidationError(
         `Count cannot exceed ${maxCount}`,
