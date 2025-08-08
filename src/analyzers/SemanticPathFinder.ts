@@ -148,6 +148,6 @@ export class SemanticPathFinder {
       }
     }
 
-    return bestNode;
+    return Promise.resolve(bestNode);
   }
 }

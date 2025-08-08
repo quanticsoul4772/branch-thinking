@@ -14,7 +14,7 @@ export class EmbeddingManager {
     // Try cache first
     const cached = semanticProfileManager.getCachedEmbedding(thoughtId);
     if (cached) {
-      return cached;
+      return Promise.resolve(cached);
     }
 
     // Calculate if not cached
