@@ -44,7 +44,8 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for content exceeding maximum length', async () => {
-      const longContent = 'a'.repeat(10001); // exceeds 10000 char limit
+      const maxLength = 10000; // Should ideally come from config or constants
+      const longContent = 'a'.repeat(maxLength + 1);
       await expect(graph.addThought({
         content: longContent,
         type: 'analysis'
