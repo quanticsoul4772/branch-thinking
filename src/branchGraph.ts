@@ -57,6 +57,14 @@ export class BranchGraph {
   private branchCounter = 0;
   private eventCounter = 0;
   
+  // Validation constants
+  private static readonly MIN_CONTENT_LENGTH = 1;
+  private static readonly MAX_CONTENT_LENGTH = 10000;
+  private static readonly MIN_CONFIDENCE = 0.0;
+  private static readonly MAX_CONFIDENCE = 1.0;
+  private static readonly MAX_STRENGTH = 1.0;
+  private static readonly MIN_STRENGTH = 0.0;
+  
   constructor() {
     // Initialize components
     this.storage = new BranchGraphStorage();
@@ -73,6 +81,9 @@ export class BranchGraph {
    * Add a thought to the graph
    */
   async addThought(input: BranchingThoughtInput): Promise<AddThoughtResult> {
+    // Input validation
+    this.validateAddThoughtInput(input);
+    
     const params = this.prepareAddThoughtParams(input);
     const { thoughtId, actualBranchId } = await this.createThought(params);
     
@@ -254,6 +265,11 @@ export class BranchGraph {
    * Create a new branch
    */
   createBranch(parentBranchId?: string): string {
+    // Validate parent branch exists if provided
+    if (parentBranchId !== undefined) {
+      this.validateBranchId(parentBranchId, 'parentBranchId');
+    }
+    
     const branchId = `branch-${++this.branchCounter}`;
     this.createBranchWithId(branchId, parentBranchId);
     return branchId;
@@ -263,6 +279,18 @@ export class BranchGraph {
    * Create a branch with a specific ID
    */
   createBranchWithId(branchId: string, parentBranchId?: string): void {
+    // Input validation
+    this.validateBranchIdFormat(branchId, 'branchId');
+    
+    if (parentBranchId !== undefined) {
+      this.validateBranchId(parentBranchId, 'parentBranchId');
+    }
+    
+    // Check if branch already exists
+    if (this.storage.hasBranch(branchId)) {
+      throw new Error(`Branch with ID '${branchId}' already exists`);
+    }
+    
     this.storage.createBranch(branchId, parentBranchId);
     
     this.storage.recordEvent({
@@ -310,15 +338,28 @@ export class BranchGraph {
   }
 
   getRecentThoughts(branchId: string, count: number): ThoughtData[] {
+    // Input validation
+    this.validateBranchId(branchId, 'branchId');
+    this.validatePositiveInteger(count, 'count');
+    
     return this.storage.getRecentThoughts(branchId, count);
   }
 
   // Search methods
   breadthFirstSearch(startBranchId: string, maxDepth: number): Set<string> {
+    // Input validation
+    this.validateBranchId(startBranchId, 'startBranchId');
+    this.validatePositiveInteger(maxDepth, 'maxDepth');
+    
     return this.search.breadthFirstSearch(startBranchId, maxDepth);
   }
 
   searchThoughts(pattern: RegExp): { thoughtId: string; branchId: string }[] {
+    // Input validation
+    if (!(pattern instanceof RegExp)) {
+      throw new Error('Parameter \'pattern\' must be a valid RegExp object');
+    }
+    
     return this.search.searchThoughts(pattern);
   }
 
@@ -334,12 +375,12 @@ export class BranchGraph {
 
   // Phase 4 methods
   calculateSimilarity(thoughtId1: string, thoughtId2: string): number {
+    // Input validation
+    this.validateThoughtId(thoughtId1, 'thoughtId1');
+    this.validateThoughtId(thoughtId2, 'thoughtId2');
+    
     const thought1 = this.storage.getThought(thoughtId1);
     const thought2 = this.storage.getThought(thoughtId2);
-    
-    if (!thought1 || !thought2) {
-      return 0;
-    }
     
     // Check cache first
     const cached = this.similarityMatrix.getSimilarity(thoughtId1, thoughtId2);
@@ -357,6 +398,10 @@ export class BranchGraph {
   }
 
   getMostSimilarThoughts(thoughtId: string, topK: number = 5): { thoughtId: string; similarity: number }[] {
+    // Input validation
+    this.validateThoughtId(thoughtId, 'thoughtId');
+    this.validatePositiveInteger(topK, 'topK');
+    
     return this.similarityMatrix.getMostSimilar(thoughtId, topK);
   }
 
@@ -365,11 +410,17 @@ export class BranchGraph {
   }
 
   getThoughtClusters(minSimilarity: number = getConfig().matrix.clusteringMinSimilarity): string[][] {
+    // Input validation
+    this.validateRange(minSimilarity, 0, 1, 'minSimilarity');
+    
     return this.similarityMatrix.getClusters(minSimilarity);
   }
 
   // Legacy compatibility
   toLegacyBranch(branchId: string): any {
+    // Input validation
+    this.validateBranchId(branchId, 'branchId');
+    
     return this.storage.toLegacyBranch(branchId);
   }
 
@@ -388,10 +439,253 @@ export class BranchGraph {
 
   // Export methods
   *getThoughtBatches(batchSize: number): Generator<ThoughtData[]> {
+    // Input validation
+    this.validatePositiveInteger(batchSize, 'batchSize');
+    
     yield* this.storage.getThoughtBatches(batchSize);
   }
 
   *getBranchBatches(batchSize: number): Generator<BranchNode[]> {
+    // Input validation
+    this.validatePositiveInteger(batchSize, 'batchSize');
+    
     yield* this.storage.getBranchBatches(batchSize);
+  }
+  
+  // Private validation methods
+  
+  /**
+   * Validate input for addThought method
+   */
+  private validateAddThoughtInput(input: BranchingThoughtInput): void {
+    if (!input) {
+      throw new Error('Input parameter is required');
+    }
+    
+    // Validate content
+    this.validateContent(input.content);
+    
+    // Validate type
+    this.validateNonEmptyString(input.type, 'type');
+    
+    // Validate optional confidence
+    if (input.confidence !== undefined) {
+      this.validateConfidence(input.confidence);
+    }
+    
+    // Validate optional keyPoints
+    if (input.keyPoints !== undefined) {
+      this.validateKeyPoints(input.keyPoints);
+    }
+    
+    // Validate optional branchId format
+    if (input.branchId !== undefined) {
+      this.validateBranchIdFormat(input.branchId, 'branchId');
+    }
+    
+    // Validate optional parentBranchId
+    if (input.parentBranchId !== undefined) {
+      this.validateBranchId(input.parentBranchId, 'parentBranchId');
+    }
+    
+    // Validate optional crossRefs
+    if (input.crossRefs !== undefined) {
+      this.validateCrossRefs(input.crossRefs);
+    }
+  }
+  
+  /**
+   * Validate thought content
+   */
+  private validateContent(content: any): void {
+    if (content === null || content === undefined) {
+      throw new Error('Content is required');
+    }
+    
+    if (typeof content !== 'string') {
+      throw new Error('Content must be a string');
+    }
+    
+    if (content.trim().length < BranchGraph.MIN_CONTENT_LENGTH) {
+      throw new Error(`Content must be at least ${BranchGraph.MIN_CONTENT_LENGTH} character(s) long`);
+    }
+    
+    if (content.length > BranchGraph.MAX_CONTENT_LENGTH) {
+      throw new Error(`Content must not exceed ${BranchGraph.MAX_CONTENT_LENGTH} characters`);
+    }
+  }
+  
+  /**
+   * Validate confidence value
+   */
+  private validateConfidence(confidence: any): void {
+    this.validateRange(confidence, BranchGraph.MIN_CONFIDENCE, BranchGraph.MAX_CONFIDENCE, 'confidence');
+  }
+  
+  /**
+   * Validate numeric range
+   */
+  private validateRange(value: any, min: number, max: number, paramName: string): void {
+    if (typeof value !== 'number' || isNaN(value)) {
+      throw new Error(`Parameter '${paramName}' must be a valid number`);
+    }
+    
+    if (value < min || value > max) {
+      throw new Error(`Parameter '${paramName}' must be between ${min} and ${max}`);
+    }
+  }
+  
+  /**
+   * Validate key points array
+   */
+  private validateKeyPoints(keyPoints: any): void {
+    if (!Array.isArray(keyPoints)) {
+      throw new Error('KeyPoints must be an array');
+    }
+    
+    // Allow empty arrays, but validate non-empty ones
+    if (keyPoints.length > 0) {
+      for (let i = 0; i < keyPoints.length; i++) {
+        if (typeof keyPoints[i] !== 'string') {
+          throw new Error(`KeyPoint at index ${i} must be a string`);
+        }
+        
+        if (keyPoints[i].trim().length === 0) {
+          throw new Error(`KeyPoint at index ${i} cannot be empty`);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Validate cross references
+   */
+  private validateCrossRefs(crossRefs: any): void {
+    if (!Array.isArray(crossRefs)) {
+      throw new Error('CrossRefs must be an array');
+    }
+    
+    if (crossRefs.length === 0) {
+      throw new Error('CrossRefs array cannot be empty when provided');
+    }
+    
+    for (let i = 0; i < crossRefs.length; i++) {
+      const ref = crossRefs[i];
+      
+      if (!ref || typeof ref !== 'object') {
+        throw new Error(`CrossRef at index ${i} must be an object`);
+      }
+      
+      // Validate toBranch
+      this.validateBranchIdFormat(ref.toBranch, `crossRefs[${i}].toBranch`);
+      
+      // Validate type
+      this.validateCrossRefType(ref.type, `crossRefs[${i}].type`);
+      
+      // Validate reason
+      this.validateNonEmptyString(ref.reason, `crossRefs[${i}].reason`);
+      
+      // Validate strength
+      this.validateRange(ref.strength, BranchGraph.MIN_STRENGTH, BranchGraph.MAX_STRENGTH, `crossRefs[${i}].strength`);
+    }
+  }
+  
+  /**
+   * Validate cross reference type
+   */
+  private validateCrossRefType(type: any, paramName: string): void {
+    const validTypes: CrossRefType[] = ['complementary', 'contradictory', 'builds_upon', 'alternative', 'supports'];
+    
+    if (typeof type !== 'string' || !validTypes.includes(type as CrossRefType)) {
+      throw new Error(`Parameter '${paramName}' must be one of: ${validTypes.join(', ')}`);
+    }
+  }
+  
+  /**
+   * Validate branch ID format (for new branches)
+   */
+  private validateBranchIdFormat(branchId: any, paramName: string): void {
+    if (branchId === null || branchId === undefined) {
+      throw new Error(`Parameter '${paramName}' is required`);
+    }
+    
+    if (typeof branchId !== 'string') {
+      throw new Error(`Parameter '${paramName}' must be a string`);
+    }
+    
+    if (branchId.trim().length === 0) {
+      throw new Error(`Parameter '${paramName}' cannot be empty`);
+    }
+    
+    // Basic format validation (no whitespace, reasonable length)
+    if (/\s/.test(branchId)) {
+      throw new Error(`Parameter '${paramName}' cannot contain whitespace`);
+    }
+    
+    if (branchId.length > 100) {
+      throw new Error(`Parameter '${paramName}' must not exceed 100 characters`);
+    }
+  }
+  
+  /**
+   * Validate branch ID exists
+   */
+  private validateBranchId(branchId: any, paramName: string): void {
+    this.validateBranchIdFormat(branchId, paramName);
+    
+    if (!this.storage.hasBranch(branchId)) {
+      throw new Error(`Branch '${branchId}' does not exist`);
+    }
+  }
+  
+  /**
+   * Validate thought ID exists
+   */
+  private validateThoughtId(thoughtId: any, paramName: string): void {
+    if (thoughtId === null || thoughtId === undefined) {
+      throw new Error(`Parameter '${paramName}' is required`);
+    }
+    
+    if (typeof thoughtId !== 'string') {
+      throw new Error(`Parameter '${paramName}' must be a string`);
+    }
+    
+    if (thoughtId.trim().length === 0) {
+      throw new Error(`Parameter '${paramName}' cannot be empty`);
+    }
+    
+    if (!this.storage.getThought(thoughtId)) {
+      throw new Error(`Thought '${thoughtId}' does not exist`);
+    }
+  }
+  
+  /**
+   * Validate non-empty string
+   */
+  private validateNonEmptyString(value: any, paramName: string): void {
+    if (value === null || value === undefined) {
+      throw new Error(`Parameter '${paramName}' is required`);
+    }
+    
+    if (typeof value !== 'string') {
+      throw new Error(`Parameter '${paramName}' must be a string`);
+    }
+    
+    if (value.trim().length === 0) {
+      throw new Error(`Parameter '${paramName}' cannot be empty`);
+    }
+  }
+  
+  /**
+   * Validate positive integer
+   */
+  private validatePositiveInteger(value: any, paramName: string): void {
+    if (typeof value !== 'number' || isNaN(value)) {
+      throw new Error(`Parameter '${paramName}' must be a valid number`);
+    }
+    
+    if (!Number.isInteger(value) || value <= 0) {
+      throw new Error(`Parameter '${paramName}' must be a positive integer`);
+    }
   }
 }
