@@ -64,6 +64,7 @@ export class BranchGraph {
   private static readonly MAX_CONFIDENCE = 1.0;
   private static readonly MAX_STRENGTH = 1.0;
   private static readonly MIN_STRENGTH = 0.0;
+  private static readonly MAX_BRANCH_ID_LENGTH = 100;
   
   constructor() {
     // Initialize components
@@ -624,7 +625,6 @@ export class BranchGraph {
     }
     if (branchId.length > BranchGraph.MAX_BRANCH_ID_LENGTH) {
       throw new Error(`Parameter '${paramName}' must not exceed ${BranchGraph.MAX_BRANCH_ID_LENGTH} characters`);
-    }
     }
   }
   
