@@ -70,8 +70,8 @@ export const PATTERNS = {
       /(?:proves|demonstrates|indicates)\s+([^,.]+)/g
     ],
     dependencies: [
-      /(?:as shown in|see|refer to|from)\s+thought[- ]?(\w+)/g,
-      /(?:building on|extending|following)\s+(\w+)/g
+      /(?:as shown in|see|refer to|from)\s+thought[- ]?([\w-]+)/g,
+      /(?:building on|extending|following)\s+([\w-]+)/g
     ]
   },
 
