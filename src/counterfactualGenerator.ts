@@ -97,9 +97,11 @@ export class CounterfactualGenerator {
     for (const pattern of assumptionPatterns) {
       let match;
       while ((match = pattern.exec(content)) !== null) {
-        const assumption = match[1].trim();
-        if (assumption.length > 10 && assumption.length < 100) {
-          assumptions.push(assumption);
+        if (match[1]) {
+          const assumption = match[1].trim();
+          if (assumption.length > 10 && assumption.length < 100) {
+            assumptions.push(assumption);
+          }
         }
       }
     }
@@ -109,7 +111,9 @@ export class CounterfactualGenerator {
       const futurePattern = /(?:will|would) (.+?)(?:\.|,|;|$)/gi;
       let match;
       while ((match = futurePattern.exec(content)) !== null) {
-        assumptions.push(`future state: ${match[1].trim()}`);
+        if (match[1]) {
+          assumptions.push(`future state: ${match[1].trim()}`);
+        }
       }
     }
 
