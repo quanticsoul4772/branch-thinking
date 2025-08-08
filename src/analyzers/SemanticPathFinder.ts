@@ -58,7 +58,7 @@ export class SemanticPathFinder {
     let currentEmbedding = await this.embeddingManager.getEmbedding(fromThoughtId, fromThought.content);
     let cumulativeDistance = 0;
 
-    for (let step = 0; step < maxSteps && path[path.length - 1].thoughtId !== toThoughtId; step++) {
+    for (let step = 0; step < maxSteps && path[path.length - 1]?.thoughtId !== toThoughtId; step++) {
       const nextNode = await this.findNextStep(
         currentEmbedding,
         toEmbedding,
@@ -67,7 +67,8 @@ export class SemanticPathFinder {
         cumulativeDistance
       );
 
-      if (!nextNode || nextNode.similarity <= path[path.length - 1].similarity - 0.1) {
+      const lastNode = path[path.length - 1];
+      if (!nextNode || !lastNode || nextNode.similarity <= lastNode.similarity - 0.1) {
         break; // No progress
       }
 

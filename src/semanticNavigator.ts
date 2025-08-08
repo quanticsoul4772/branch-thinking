@@ -593,7 +593,14 @@ export class SemanticNavigator {
     const driftPoints: Array<{ index: number; drift: number; thought: string }> = [];
     
     for (let i = 1; i < embeddings.length; i++) {
-      const similarity = semanticSimilarity.cosineSimilarity(embeddings[i - 1], embeddings[i]);
+      const prevEmbedding = embeddings[i - 1];
+      const currEmbedding = embeddings[i];
+      
+      if (!prevEmbedding || !currEmbedding) {
+        throw new Error(`Missing embedding at index ${i - 1} or ${i}`);
+      }
+      
+      const similarity = semanticSimilarity.cosineSimilarity(prevEmbedding, currEmbedding);
       totalContinuity += similarity;
       
       const drift = 1 - similarity;
@@ -645,9 +652,16 @@ export class SemanticNavigator {
     clusterStart: number,
     currentIndex: number
   ): boolean {
+    const clusterStartEmbedding = embeddings[clusterStart];
+    const currentEmbedding = embeddings[currentIndex];
+    
+    if (!clusterStartEmbedding || !currentEmbedding) {
+      throw new Error(`Missing embedding at index ${clusterStart} or ${currentIndex}`);
+    }
+    
     const similarity = semanticSimilarity.cosineSimilarity(
-      embeddings[clusterStart],
-      embeddings[currentIndex]
+      clusterStartEmbedding,
+      currentEmbedding
     );
     
     return similarity < 0.6 || currentIndex === embeddings.length - 1;
