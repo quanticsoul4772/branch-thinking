@@ -378,9 +378,9 @@ export class BranchGraph {
     // Input validation
     this.validateThoughtId(thoughtId1, 'thoughtId1');
     this.validateThoughtId(thoughtId2, 'thoughtId2');
-    
-    const thought1 = this.storage.getThought(thoughtId1);
-    const thought2 = this.storage.getThought(thoughtId2);
+  
+    const thought1 = this.storage.getThought(thoughtId1)!;
+    const thought2 = this.storage.getThought(thoughtId2)!;
     
     // Check cache first
     const cached = this.similarityMatrix.getSimilarity(thoughtId1, thoughtId2);
