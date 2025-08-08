@@ -18,6 +18,7 @@ import { semanticProfileManager } from './semanticProfile.js';
 import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
+import { BranchGraphValidator, ValidatedThoughtInput } from './BranchGraphValidator.js';
 
 export interface AddThoughtParams {
   content: string;
@@ -73,7 +74,9 @@ export class BranchGraph {
    * Add a thought to the graph
    */
   async addThought(input: BranchingThoughtInput): Promise<AddThoughtResult> {
-    const params = this.prepareAddThoughtParams(input);
+    // Validate input using centralized validator
+    const validatedInput = BranchGraphValidator.validateBranchingThoughtInput(input);
+    const params = this.prepareAddThoughtParams(validatedInput);
     const { thoughtId, actualBranchId } = await this.createThought(params);
     
     // Update semantic profile
@@ -94,13 +97,13 @@ export class BranchGraph {
     return { thoughtId, overlapWarning };
   }
 
-  private prepareAddThoughtParams(input: BranchingThoughtInput): AddThoughtParams {
+  private prepareAddThoughtParams(input: ValidatedThoughtInput): AddThoughtParams {
     return {
       content: input.content,
       branchId: input.branchId,
       type: input.type,
-      confidence: input.confidence || 1.0,
-      keyPoints: input.keyPoints || [],
+      confidence: input.confidence,
+      keyPoints: input.keyPoints,
       parentBranchId: input.parentBranchId,
       crossRefs: input.crossRefs
     };
@@ -138,6 +141,9 @@ export class BranchGraph {
     if (!branchId) {
       return this.createBranch(parentBranchId);
     }
+    
+    // Validate branch ID format
+    BranchGraphValidator.validateBranchId(branchId);
     
     if (!this.storage.hasBranch(branchId)) {
       this.createBranchWithId(branchId, parentBranchId);
@@ -263,6 +269,15 @@ export class BranchGraph {
    * Create a branch with a specific ID
    */
   createBranchWithId(branchId: string, parentBranchId?: string): void {
+    // Validate branch ID format
+    BranchGraphValidator.validateBranchId(branchId);
+    
+    // Validate parent branch exists if specified
+    if (parentBranchId) {
+      BranchGraphValidator.validateBranchId(parentBranchId);
+      BranchGraphValidator.validateBranchExists(parentBranchId, (id) => this.storage.getBranch(id));
+    }
+    
     this.storage.createBranch(branchId, parentBranchId);
     
     this.storage.recordEvent({
@@ -298,10 +313,16 @@ export class BranchGraph {
   }
 
   getThought(thoughtId: string): ThoughtData | undefined {
+    // Validate thought ID format
+    BranchGraphValidator.validateThoughtId(thoughtId);
+    
     return this.storage.getThought(thoughtId);
   }
 
   getBranch(branchId: string): BranchNode | undefined {
+    // Validate branch ID format
+    BranchGraphValidator.validateBranchId(branchId);
+    
     return this.storage.getBranch(branchId);
   }
 
@@ -310,15 +331,28 @@ export class BranchGraph {
   }
 
   getRecentThoughts(branchId: string, count: number): ThoughtData[] {
+    // Validate parameters
+    BranchGraphValidator.validateBranchId(branchId);
+    BranchGraphValidator.validateCount(count);
+    BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
+    
     return this.storage.getRecentThoughts(branchId, count);
   }
 
   // Search methods
   breadthFirstSearch(startBranchId: string, maxDepth: number): Set<string> {
+    // Validate search parameters
+    BranchGraphValidator.validateBranchId(startBranchId);
+    BranchGraphValidator.validateMaxDepth(maxDepth);
+    BranchGraphValidator.validateBranchExists(startBranchId, (id) => this.storage.getBranch(id));
+    
     return this.search.breadthFirstSearch(startBranchId, maxDepth);
   }
 
   searchThoughts(pattern: RegExp): { thoughtId: string; branchId: string }[] {
+    // Validate search pattern
+    BranchGraphValidator.validateSearchPattern(pattern);
+    
     return this.search.searchThoughts(pattern);
   }
 
@@ -334,6 +368,10 @@ export class BranchGraph {
 
   // Phase 4 methods
   calculateSimilarity(thoughtId1: string, thoughtId2: string): number {
+    // Validate thought IDs
+    BranchGraphValidator.validateThoughtId(thoughtId1);
+    BranchGraphValidator.validateThoughtId(thoughtId2);
+    
     const thought1 = this.storage.getThought(thoughtId1);
     const thought2 = this.storage.getThought(thoughtId2);
     
@@ -357,6 +395,10 @@ export class BranchGraph {
   }
 
   getMostSimilarThoughts(thoughtId: string, topK: number = 5): { thoughtId: string; similarity: number }[] {
+    // Validate parameters
+    BranchGraphValidator.validateThoughtId(thoughtId);
+    BranchGraphValidator.validateCount(topK);
+    
     return this.similarityMatrix.getMostSimilar(thoughtId, topK);
   }
 
@@ -365,6 +407,9 @@ export class BranchGraph {
   }
 
   getThoughtClusters(minSimilarity: number = getConfig().matrix.clusteringMinSimilarity): string[][] {
+    // Validate similarity threshold
+    BranchGraphValidator.validateSimilarityThreshold(minSimilarity);
+    
     return this.similarityMatrix.getClusters(minSimilarity);
   }
 
