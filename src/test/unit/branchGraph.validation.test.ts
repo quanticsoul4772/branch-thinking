@@ -46,8 +46,8 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for content exceeding maximum length', async () => {
-      // Use a reasonable max length for testing (10k characters)
-      const maxLength = 10000;
+      // Use the current max length (150k characters) + 1
+      const maxLength = 150000;
       const longContent = 'a'.repeat(maxLength + 1);
       await expect(graph.addThought({
         content: longContent,
@@ -214,12 +214,12 @@ describe('BranchGraph Input Validation and Error Handling', () => {
       });
     });
 
-    it('should throw ThoughtNotFoundError for non-existent thought in calculateSimilarity', () => {
-      expect(() => graph.calculateSimilarity('non-existent', 'also-non-existent')).toThrow(ThoughtNotFoundError);
+    it('should return 0 for non-existent thoughts in calculateSimilarity', () => {
+      expect(graph.calculateSimilarity('1234567890abcdef', '1234567890abcdee')).toBe(0);
     });
 
-    it('should throw ThoughtNotFoundError for non-existent thought in getMostSimilarThoughts', () => {
-      expect(() => graph.getMostSimilarThoughts('non-existent')).toThrow(ThoughtNotFoundError);
+    it('should return empty array for non-existent thought in getMostSimilarThoughts', () => {
+      expect(graph.getMostSimilarThoughts('1234567890abcdef')).toEqual([]);
     });
 
     it('should throw ValidationError for invalid topK in getMostSimilarThoughts', async () => {
@@ -228,7 +228,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
         type: 'analysis'
       });
       
-      expect(() => graph.getMostSimilarThoughts(result.thoughtId, 0)).toThrow(ValidationError);
+      expect(() => graph.getMostSimilarThoughts(result.thoughtId, -1)).toThrow(ValidationError);
     });
   });
 

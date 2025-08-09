@@ -11,7 +11,7 @@ describe('Branch History and Focus Integration', () => {
 
   it('should create and manage multiple branches with proper history', async () => {
     // Create main branch thoughts
-    const mainThought1 = graph.addThought({
+    const mainThought1 = await graph.addThought({
       content: 'Analyzing user authentication requirements',
       type: 'analysis' as ThoughtType,
       branchId: 'main',
@@ -19,7 +19,7 @@ describe('Branch History and Focus Integration', () => {
       keyPoints: ['security', 'user-experience']
     });
 
-    const mainThought2 = graph.addThought({
+    const mainThought2 = await graph.addThought({
       content: 'Security considerations for authentication',
       type: 'analysis' as ThoughtType,
       branchId: 'main',
@@ -29,7 +29,7 @@ describe('Branch History and Focus Integration', () => {
 
     // Create first solution branch
     const oauthBranchId = graph.createBranch('main');
-    const oauthBranch = graph.addThought({
+    const oauthBranch = await graph.addThought({
       content: 'Implementing OAuth2 with third-party providers',
       type: 'solution' as ThoughtType,
       branchId: oauthBranchId,
@@ -39,7 +39,7 @@ describe('Branch History and Focus Integration', () => {
 
     // Create second solution branch
     const jwtBranchId = graph.createBranch('main');
-    const jwtBranch = graph.addThought({
+    const jwtBranch = await graph.addThought({
       content: 'JWT-based authentication with local storage',
       type: 'solution' as ThoughtType,
       branchId: jwtBranchId,
@@ -49,7 +49,7 @@ describe('Branch History and Focus Integration', () => {
 
     // Create third solution branch
     const sessionBranchId = graph.createBranch('main');
-    const sessionBranch = graph.addThought({
+    const sessionBranch = await graph.addThought({
       content: 'Traditional session-based authentication',
       type: 'solution' as ThoughtType,
       branchId: sessionBranchId,
@@ -70,7 +70,7 @@ describe('Branch History and Focus Integration', () => {
     expect(foundOauthBranch?.id).toBe(oauthBranchId);
 
     // Add thoughts to specific branch and verify history
-    const oauthDetail = graph.addThought({
+    const oauthDetail = await graph.addThought({
       content: 'Configure Google OAuth2 provider settings',
       type: 'hypothesis' as ThoughtType,
       branchId: oauthBranchId,
@@ -78,7 +78,7 @@ describe('Branch History and Focus Integration', () => {
       keyPoints: ['google-oauth', 'client-id', 'redirect-uri']
     });
 
-    const oauthImplementation = graph.addThought({
+    const oauthImplementation = await graph.addThought({
       content: 'Implement callback handler for OAuth2 flow',
       type: 'validation' as ThoughtType,
       branchId: oauthBranchId,
@@ -132,28 +132,28 @@ describe('Branch History and Focus Integration', () => {
     expect(branchStats.totalThoughts).toBeGreaterThan(0);
   });
 
-  it('should handle complex branch relationships and history queries', () => {
+  it('should handle complex branch relationships and history queries', async () => {
     // Create a complex branching structure
-    const rootAnalysis = graph.addThought({
+    const rootAnalysis = await graph.addThought({
       content: 'Database design for e-commerce platform',
       type: 'analysis' as ThoughtType,
       confidence: 0.9
     });
 
     // Create multiple database approach branches
-    const mysqlBranch = graph.addThought({
+    const mysqlBranch = await graph.addThought({
       content: 'MySQL with normalized schema design',
       type: 'solution' as ThoughtType,
       confidence: 0.8
     });
 
-    const mongoBranch = graph.addThought({
+    const mongoBranch = await graph.addThought({
       content: 'MongoDB with document-based collections',
       type: 'solution' as ThoughtType, 
       confidence: 0.7
     });
 
-    const postgresBranch = graph.addThought({
+    const postgresBranch = await graph.addThought({
       content: 'PostgreSQL with JSON columns for flexibility',
       type: 'solution' as ThoughtType,
       confidence: 0.85
@@ -171,14 +171,14 @@ describe('Branch History and Focus Integration', () => {
 
     // Create sub-branches from MySQL branch
     if (mysqlBranchId) {
-      const indexingStrategy = graph.addThought({
+      const indexingStrategy = await graph.addThought({
         content: 'Implement composite indexes for product queries',
         type: 'hypothesis' as ThoughtType,
         branchId: mysqlBranchId,
         confidence: 0.8
       });
 
-      const shardingStrategy = graph.addThought({
+      const shardingStrategy = await graph.addThought({
         content: 'Consider horizontal sharding by user region',
         type: 'hypothesis' as ThoughtType,
         branchId: mysqlBranchId,
@@ -201,7 +201,7 @@ describe('Branch History and Focus Integration', () => {
     // Test branch comparison and analytics
     if (mysqlBranchId && mongoBranchId) {
       // Add thought with cross-reference to demonstrate relationship
-      graph.addThought({
+      await graph.addThought({
         content: 'Database approach comparison',
         type: 'analysis' as ThoughtType,
         branchId: mysqlBranchId,
@@ -220,21 +220,21 @@ describe('Branch History and Focus Integration', () => {
     }
   });
 
-  it('should maintain focus context across branch switches', () => {
+  it('should maintain focus context across branch switches', async () => {
     // Create initial branches
-    const apiDesign = graph.addThought({
+    const apiDesign = await graph.addThought({
       content: 'REST API endpoint design principles',
       type: 'analysis' as ThoughtType,
       confidence: 0.8
     });
 
-    const restBranch = graph.addThought({
+    const restBranch = await graph.addThought({
       content: 'RESTful API with standard HTTP methods',
       type: 'solution' as ThoughtType,
       confidence: 0.7
     });
 
-    const graphqlBranch = graph.addThought({
+    const graphqlBranch = await graph.addThought({
       content: 'GraphQL API with flexible queries',
       type: 'solution' as ThoughtType,
       confidence: 0.8
@@ -252,7 +252,7 @@ describe('Branch History and Focus Integration', () => {
     // Test branch-specific content preservation
     if (restBranchId && graphqlBranchId) {
       // Add content to REST branch
-      const restDetail = graph.addThought({
+      const restDetail = await graph.addThought({
         content: 'Implement pagination with limit/offset parameters',
         type: 'validation' as ThoughtType,
         branchId: restBranchId,
@@ -260,7 +260,7 @@ describe('Branch History and Focus Integration', () => {
       });
 
       // Add content to GraphQL branch
-      const graphqlDetail = graph.addThought({
+      const graphqlDetail = await graph.addThought({
         content: 'Define schema with nested resolvers',
         type: 'validation' as ThoughtType,
         branchId: graphqlBranchId,

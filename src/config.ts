@@ -142,7 +142,7 @@ export const DEFAULT_CONFIG: BranchThinkingConfig = {
       good: 0.55,
       moderate: 0.35
     },
-    maxContentLength: 10000,
+    maxContentLength: 150000, // Increased for performance testing
     maxTraversalDepth: 1000,
     maxResultCount: 1000
   },

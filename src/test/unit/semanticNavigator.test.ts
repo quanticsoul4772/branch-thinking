@@ -119,7 +119,7 @@ describe('SemanticNavigator', () => {
       const query = "test query";
       const results = await navigator.findSimilar(graph, query, 10);
 
-      expect(results).toHaveLength(12); // Total thoughts across all branches
+      expect(results).toHaveLength(10); // Limited to 10 as specified
       
       // Verify all branches are represented
       const branchIds = new Set(results.map(r => r.branchId));
@@ -164,7 +164,7 @@ describe('SemanticNavigator', () => {
       const query = "test query";
       const results = await navigator.findSimilar(graph, query, 10);
 
-      expect(results).toHaveLength(12); // Same as before, empty branch contributes nothing
+      expect(results).toHaveLength(10); // Limited to 10, empty branch contributes nothing
     });
 
     test('should call embedding generation for query', async () => {
@@ -184,7 +184,7 @@ describe('SemanticNavigator', () => {
       const sourceThoughtId = firstThought.id;
       const results = await navigator.jumpToRelated(graph, sourceThoughtId, 10);
 
-      expect(results.length).toBe(11); // All thoughts except source
+      expect(results.length).toBe(10); // Limited to 10 as specified
       
       // Verify source thought is excluded
       const selfReference = results.find(r => r.thoughtId === sourceThoughtId);
