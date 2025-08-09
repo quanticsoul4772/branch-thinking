@@ -164,7 +164,7 @@ export class BranchGraphStorage {
   /**
    * Convert to legacy format
    */
-  toLegacyBranch(branchId: string): any {
+  toLegacyBranch(branchId: string): unknown {
     const branch = this.getBranch(branchId);
     if (!branch) {
       return null;

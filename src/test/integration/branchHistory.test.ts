@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BranchGraph } from '../../branchGraph.js';
-import type { ThoughtType, BranchState } from '../../types.js';
+import type { ThoughtType, _BranchState } from '../../types.js';
 
 describe('Branch History and Focus Integration', () => {
   let graph: BranchGraph;
@@ -14,6 +14,7 @@ describe('Branch History and Focus Integration', () => {
     const mainThought1 = graph.addThought({
       content: 'Analyzing user authentication requirements',
       type: 'analysis' as ThoughtType,
+      branchId: 'main',
       confidence: 0.8,
       keyPoints: ['security', 'user-experience']
     });
@@ -21,30 +22,37 @@ describe('Branch History and Focus Integration', () => {
     const mainThought2 = graph.addThought({
       content: 'Security considerations for authentication',
       type: 'analysis' as ThoughtType,
+      branchId: 'main',
       confidence: 0.9,
       keyPoints: ['security', 'vulnerabilities']
     });
 
     // Create first solution branch
+    const oauthBranchId = graph.createBranch('main');
     const oauthBranch = graph.addThought({
       content: 'Implementing OAuth2 with third-party providers',
       type: 'solution' as ThoughtType,
+      branchId: oauthBranchId,
       confidence: 0.8,
       keyPoints: ['oauth2', 'third-party', 'google', 'github']
     });
 
     // Create second solution branch
+    const jwtBranchId = graph.createBranch('main');
     const jwtBranch = graph.addThought({
       content: 'JWT-based authentication with local storage',
       type: 'solution' as ThoughtType,
+      branchId: jwtBranchId,
       confidence: 0.7,
       keyPoints: ['jwt', 'local', 'stateless']
     });
 
     // Create third solution branch
+    const sessionBranchId = graph.createBranch('main');
     const sessionBranch = graph.addThought({
       content: 'Traditional session-based authentication',
       type: 'solution' as ThoughtType,
+      branchId: sessionBranchId,
       confidence: 0.6,
       keyPoints: ['sessions', 'server-side', 'cookies']
     });
@@ -54,11 +62,12 @@ describe('Branch History and Focus Integration', () => {
     expect(branches.length).toBeGreaterThanOrEqual(4);
 
     // Test finding OAuth branch
-    const oauthBranchId = branches.find(b => 
-      b.thoughts.some(t => t.content.includes('OAuth2'))
-    )?.id;
+    const foundOauthBranch = branches.find(b => 
+      b.thoughts.some(t => t.content.toLowerCase().includes('oauth2'))
+    );
     
-    expect(oauthBranchId).toBeDefined();
+    expect(foundOauthBranch).toBeDefined();
+    expect(foundOauthBranch?.id).toBe(oauthBranchId);
 
     // Add thoughts to specific branch and verify history
     const oauthDetail = graph.addThought({
@@ -88,11 +97,11 @@ describe('Branch History and Focus Integration', () => {
     }
 
     // Test cross-branch references
-    const jwtBranchId = branches.find(b => 
+    const foundJwtBranch = branches.find(b => 
       b.thoughts.some(t => t.content.includes('JWT'))
-    )?.id;
+    );
 
-    if (jwtBranchId && oauthBranchId) {
+    if (foundJwtBranch && oauthBranchId) {
       // Add a thought with cross-reference instead of using crossReference method
       const crossRefThought = await graph.addThought({
         content: 'Authentication comparison analysis',
@@ -100,7 +109,7 @@ describe('Branch History and Focus Integration', () => {
         branchId: oauthBranchId,
         confidence: 0.8,
         crossRefs: [{
-          toBranch: jwtBranchId,
+          toBranch: foundJwtBranch.id,
           type: 'alternative',
           reason: 'Both are viable authentication approaches with different trade-offs',
           strength: 0.7

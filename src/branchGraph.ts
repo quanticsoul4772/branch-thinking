@@ -1,10 +1,11 @@
+import type { _UnknownObject, _UnknownArray, _CommandData } from './typeDefinitions.js';
 import { createHash } from 'crypto';
 import { 
   ThoughtData, 
   BranchNode, 
   ThoughtEvent, 
   BranchingThoughtInput,
-  CrossReference,
+  _CrossReference,
   CrossRefType
 } from './types.js';
 import { ContradictionBloomFilter } from './bloomFilter.js';
@@ -16,6 +17,7 @@ import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
 import { BranchGraphValidator, ValidatedThoughtInput } from './BranchGraphValidator.js';
+import { ValidationError } from './utils/errors.js';
 // Error types available if needed
 // import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
 
@@ -153,7 +155,8 @@ export class BranchGraph {
    */
   private ensureBranch(branchId?: string, parentBranchId?: string): string {
     if (!branchId) {
-      return this.createBranch(parentBranchId);
+      // If no branch ID provided, create a new branch with main as parent (unless explicitly specified otherwise)
+      return this.createBranch(parentBranchId ?? 'main');
     }
     
     // Validate branch ID format
@@ -227,7 +230,9 @@ export class BranchGraph {
     this.contradictionFilter.checkAndAdd(content);
     
     // Add to circular reasoning detector
-    const referencedThoughts = crossRefs?.map(ref => ref.toBranch) || [];
+    // For now, we'll track dependencies between thoughts in the same branch
+    // Cross-references to other branches are not tracked as dependencies for circular reasoning
+    const referencedThoughts: string[] = [];
     this.circularDetector.addThought(thoughtId, content, referencedThoughts);
     
     // Register in similarity matrix
@@ -277,7 +282,7 @@ export class BranchGraph {
     // Validate parent branch exists if provided
     if (parentBranchId !== undefined) {
       BranchGraphValidator.validateBranchId(parentBranchId);
-      BranchGraphValidator.validateBranchExists(parentBranchId, (id) => this.storage.getBranch(id));
+      BranchGraphValidator.validateBranchExists(parentBranchId, (_id) => this.storage.getBranch(_id));
     }
     
     const branchId = `branch-${++this.branchCounter}`;
@@ -292,15 +297,19 @@ export class BranchGraph {
     // Validate branch ID format
     BranchGraphValidator.validateBranchId(branchId);
     
-    // Check if branch already exists (preserve from main)
+    // Check if branch already exists
     if (this.storage.hasBranch(branchId)) {
-      return; // Silently skip if branch already exists
+      // Allow 'main' branch to be created multiple times (for initialization)
+      if (branchId === 'main') {
+        return;
+      }
+      throw new ValidationError(`Branch with ID '${branchId}' already exists`);
     }
     
     // Validate parent branch exists if specified
     if (parentBranchId) {
       BranchGraphValidator.validateBranchId(parentBranchId);
-      BranchGraphValidator.validateBranchExists(parentBranchId, (id) => this.storage.getBranch(id));
+      BranchGraphValidator.validateBranchExists(parentBranchId, (_id) => this.storage.getBranch(_id));
     }
     
     this.storage.createBranch(branchId, parentBranchId);
@@ -359,7 +368,7 @@ export class BranchGraph {
     // Validate parameters using centralized validator
     BranchGraphValidator.validateBranchId(branchId);
     BranchGraphValidator.validateCount(count);
-    BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
+    BranchGraphValidator.validateBranchExists(branchId, (_id) => this.storage.getBranch(_id));
     
     return this.storage.getRecentThoughts(branchId, count);
   }
@@ -369,7 +378,7 @@ export class BranchGraph {
     // Validate search parameters using centralized validator
     BranchGraphValidator.validateBranchId(startBranchId);
     BranchGraphValidator.validateMaxDepth(maxDepth);
-    BranchGraphValidator.validateBranchExists(startBranchId, (id) => this.storage.getBranch(id));
+    BranchGraphValidator.validateBranchExists(startBranchId, (_id) => this.storage.getBranch(_id));
     
     return this.search.breadthFirstSearch(startBranchId, maxDepth);
   }
@@ -427,7 +436,7 @@ export class BranchGraph {
     return this.similarityMatrix.getMostSimilar(thoughtId, topK);
   }
 
-  detectCircularReasoning(): any {
+  detectCircularReasoning(): unknown {
     return this.circularDetector.detectAllPatterns();
   }
 
@@ -439,24 +448,24 @@ export class BranchGraph {
   }
 
   // Legacy compatibility
-  toLegacyBranch(branchId: string): any {
+  toLegacyBranch(branchId: string): unknown {
     // Validate branch ID using centralized validator
     BranchGraphValidator.validateBranchId(branchId);
-    BranchGraphValidator.validateBranchExists(branchId, (id) => this.storage.getBranch(id));
+    BranchGraphValidator.validateBranchExists(branchId, (_id) => this.storage.getBranch(_id));
     
     return this.storage.toLegacyBranch(branchId);
   }
 
   // Semantic profile methods
-  compareProfiles(): any {
+  compareProfiles(): unknown {
     return this.analytics.compareProfiles();
   }
 
-  suggestMerges(): Promise<any> {
+  suggestMerges(): Promise<unknown> {
     return Promise.resolve(this.analytics.suggestMerges());
   }
 
-  detectDrift(): Promise<any> {
+  detectDrift(): Promise<unknown> {
     return Promise.resolve(this.analytics.detectDrift());
   }
 

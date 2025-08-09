@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BranchGraph } from '../../branchGraph.js';
 import { BranchGraphAnalytics } from '../../utils/BranchGraphAnalytics.js';
-import { getConfig } from '../../config.js';
+import { _getConfig } from '../../config.js';
 import { 
   ValidationError, 
   BranchNotFoundError, 
@@ -17,11 +17,11 @@ describe('BranchGraph Input Validation and Error Handling', () => {
 
   describe('addThought validation', () => {
     it('should throw ValidationError for null input', async () => {
-      await expect(graph.addThought(null as any)).rejects.toThrow(ValidationError);
+      await expect(graph.addThought(null as unknown)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError for undefined input', async () => {
-      await expect(graph.addThought(undefined as any)).rejects.toThrow(ValidationError);
+      await expect(graph.addThought(undefined as unknown)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError for empty content', async () => {
@@ -40,7 +40,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
 
     it('should throw ValidationError for non-string content', async () => {
       await expect(graph.addThought({
-        content: 123 as any,
+        content: 123 as unknown,
         type: 'analysis'
       })).rejects.toThrow(ValidationError);
     });
@@ -75,6 +75,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
       await expect(graph.addThought({
         content: 'Test content',
         type: 'analysis',
+        parentBranchId: 'non-existent-branch'
       })).rejects.toThrow(BranchNotFoundError);
     });
 
@@ -98,7 +99,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
       await expect(graph.addThought({
         content: 'Test content',
         type: 'analysis',
-        crossRefs: 'not-an-array' as any
+        crossRefs: 'not-an-array' as unknown
       })).rejects.toThrow(ValidationError);
     });
 
@@ -159,7 +160,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for non-string thought ID', () => {
-      expect(() => graph.getThought(123 as any)).toThrow(ValidationError);
+      expect(() => graph.getThought(123 as unknown)).toThrow(ValidationError);
     });
 
     it('should throw ValidationError for invalid branch ID in getBranch', () => {
@@ -167,7 +168,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for non-string branch ID', () => {
-      expect(() => graph.getBranch(null as any)).toThrow(ValidationError);
+      expect(() => graph.getBranch(null as unknown)).toThrow(ValidationError);
     });
 
     it('should throw BranchNotFoundError for non-existent branch in getRecentThoughts', () => {
@@ -181,7 +182,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
 
     it('should throw ValidationError for non-number count in getRecentThoughts', () => {
       const branchId = graph.createBranch();
-      expect(() => graph.getRecentThoughts(branchId, 'five' as any)).toThrow(ValidationError);
+      expect(() => graph.getRecentThoughts(branchId, 'five' as unknown)).toThrow(ValidationError);
     });
   });
 
@@ -196,7 +197,7 @@ describe('BranchGraph Input Validation and Error Handling', () => {
     });
 
     it('should throw ValidationError for non-RegExp pattern in searchThoughts', () => {
-      expect(() => graph.searchThoughts('not-a-regex' as any)).toThrow(ValidationError);
+      expect(() => graph.searchThoughts('not-a-regex' as unknown)).toThrow(ValidationError);
     });
   });
 
