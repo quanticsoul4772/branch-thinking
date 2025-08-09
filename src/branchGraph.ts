@@ -15,7 +15,7 @@ import { BranchGraphStorage } from './utils/BranchGraphStorage.js';
 import { BranchGraphSearch } from './utils/BranchGraphSearch.js';
 import { BranchGraphAnalytics } from './utils/BranchGraphAnalytics.js';
 import { BranchGraphValidator, ValidatedThoughtInput } from './BranchGraphValidator.js';
-import { ValidationError } from './utils/errors.js';
+import { ValidationError } from './utils/customErrors.js';
 // Error types available if needed
 // import { ValidationError, BranchNotFoundError, ThoughtNotFoundError } from './utils/customErrors.js';
 

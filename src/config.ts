@@ -3,6 +3,8 @@
  * Eliminates hardcoded values throughout the codebase
  */
 
+import { ConfigValue } from './types/interfaces.js';
+
 export interface BranchThinkingConfig {
   text: {
     stopwords: Set<string>;
@@ -268,7 +270,7 @@ export class ConfigLoader {
     return config;
   }
   
-  private static deepMerge(target: any, source: any): void {
+  private static deepMerge(target: ConfigValue, source: ConfigValue): void {
     for (const key in source) {
       if (source[key] instanceof Object && key in target) {
         if (source[key] instanceof Set) {

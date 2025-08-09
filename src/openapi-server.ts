@@ -1,5 +1,5 @@
-/* global process */
 #!/usr/bin/env node
+/* global process */
 
 /**
  * OpenAPI specification server for Branch Thinking MCP Server
@@ -11,13 +11,15 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { createServer } from 'http';
 import yaml from 'js-yaml';
+import { logger } from './utils/logger.js';
+import { OpenApiSpec } from './types/interfaces.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
 // Read and parse the OpenAPI spec
-let openApiSpec: any;
+let openApiSpec: OpenApiSpec;
 try {
   const yamlContent = readFileSync(join(rootDir, 'spec', 'openapi.yaml'), 'utf8');
   openApiSpec = yaml.load(yamlContent);
@@ -64,20 +66,20 @@ const server = createServer((req, res) => {
 
 const port = process.env.PORT || 3001;
 server.listen(port, () => {
-  console.log(`OpenAPI server running on port ${port}`);
-  console.log(`OpenAPI spec available at: http://localhost:${port}/openapi.json`);
+  logger.info(`OpenAPI server running on port ${port}`);
+  logger.info(`OpenAPI spec available at: http://localhost:${port}/openapi.json`);
 });
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully');
+  logger.info('Received SIGTERM, shutting down gracefully');
   server.close(() => {
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully');
+  logger.info('Received SIGINT, shutting down gracefully');
   server.close(() => {
     process.exit(0);
   });

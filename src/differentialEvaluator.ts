@@ -2,6 +2,7 @@ import { BranchGraph } from './branchGraph.js';
 import { ThoughtEvent, EvaluationDelta, ThoughtData } from './types.js';
 import { getConfig } from './config.js';
 import { semanticSimilarity } from './semanticSimilarity.js';
+import { BranchMetrics } from './types/interfaces.js';
 
 export interface EvaluationResult {
   coherenceScore: number;
@@ -350,7 +351,7 @@ export class DifferentialEvaluator {
     
     const recentThoughts = recentPreviousIds
       .map(id => graph.getThought(id))
-      .filter((t: any): t is ThoughtData => t !== undefined);
+      .filter((t: unknown): t is ThoughtData => t !== undefined);
     
     return { thought, recentThoughts };
   }
@@ -398,7 +399,7 @@ export class DifferentialEvaluator {
     };
   }
 
-  private aggregateMetrics(base: EvaluationResult, deltas: EvaluationDelta[], branch: any): Partial<EvaluationResult> {
+  private aggregateMetrics(base: EvaluationResult, deltas: EvaluationDelta[], branch: BranchMetrics): Partial<EvaluationResult> {
     const totalThoughts = branch.thoughtIds.length;
     const newThoughts = deltas.length;
     const weight = totalThoughts > 0 ? (totalThoughts - newThoughts) / totalThoughts : 0;
@@ -425,10 +426,10 @@ export class DifferentialEvaluator {
     };
   }
 
-  private getBranchThoughts(branch: any, graph: BranchGraph): ThoughtData[] {
+  private getBranchThoughts(branch: BranchMetrics, graph: BranchGraph): ThoughtData[] {
     return branch.thoughtIds
       .map((id: string) => graph.getThought(id))
-      .filter((t: any): t is ThoughtData => t !== undefined);
+      .filter((t: unknown): t is ThoughtData => t !== undefined);
   }
 
   private calculateOverallScore(metrics: Partial<EvaluationResult>): number {

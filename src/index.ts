@@ -21,7 +21,7 @@ const originalConsoleDebug = console.debug;
 const originalConsoleError = console.error;
 
 // Completely silence stdout except for JSON-RPC messages
-process.stdout.write = function(chunk: any, encoding?: any, callback?: any): boolean {
+process.stdout.write = function(chunk: ProcessWriteChunk, encoding?: ProcessWriteEncoding, callback?: ProcessWriteCallback): boolean {
   const str = chunk?.toString() || '';
   // Only allow properly formatted JSON-RPC messages
   if (str.trim() && str.includes('"jsonrpc"') && str.includes('"2.0"')) {
@@ -32,14 +32,14 @@ process.stdout.write = function(chunk: any, encoding?: any, callback?: any): boo
     callback();
   }
   return true;
-} as any;
+} as typeof process.stdout.write;
 
 // Redirect ALL console methods to stderr or silence them
 console.log = (): void => {};
 console.info = (): void => {};
 console.warn = (): void => {};
 console.debug = (): void => {};
-console.error = (...args: any[]): void => {
+console.error = (...args: unknown[]): void => {
   // Only log actual errors to stderr for debugging
   if (args.some(arg => arg instanceof Error)) {
     const safeStr = args
@@ -71,8 +71,15 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { BranchManagerAdapter } from './branchManagerAdapter.js';
 import { BranchingThoughtInput } from './types.js';
+
+// Extended input type that can include commands
+interface ExtendedBranchingThoughtInput extends BranchingThoughtInput {
+  command?: CommandParams;
+}
 import { CommandHandler } from './commands/CommandHandler.js';
 import { createToolDefinition } from './utils/toolDefinition.js';
+import { ProcessWriteChunk, ProcessWriteEncoding, ProcessWriteCallback, ErrorArg, EvaluationInput, ThoughtResponse, CommandParams } from './types/interfaces.js';
+import { CommandData } from './commands/Command.js';
 
 class BranchingThoughtServer {
   private branchManager = new BranchManagerAdapter();
@@ -95,7 +102,7 @@ class BranchingThoughtServer {
     return 'Poor reasoning, consider abandoning';
   }
 
-  private collectIssues(evaluation: any): string[] {
+  private collectIssues(evaluation: EvaluationInput): string[] {
     const issues = [];
     const { coherenceScore, contradictionScore, redundancyScore, informationGain, goalAlignment } = evaluation;
     
@@ -118,7 +125,7 @@ class BranchingThoughtServer {
     return issues;
   }
 
-  private interpretEvaluation(result: any): string {
+  private interpretEvaluation(result: EvaluationInput): string {
     const { overallScore } = result;
     let interpretation = `Overall Score: ${overallScore.toFixed(2)} - `;
     interpretation += this.getScoreInterpretation(overallScore);
@@ -143,23 +150,25 @@ class BranchingThoughtServer {
     };
   }
 
-  private createResponse(result: any, branch: any): any {
-    const response: any = {
+  private createResponse(result: any, branch: any): ThoughtResponse {
+    const response: ThoughtResponse = {
       thoughtId: result.thought.id,
       branchId: result.thought.branchId,
       branchState: branch.state,
       branchPriority: branch.priority,
       numThoughts: branch.thoughts.length,
-      activeBranch: this.branchManager.getActiveBranch()?.id
+      activeBranch: this.branchManager.getActiveBranch()?.id || ''
     };
 
     if (result.feedback) {
       response.evaluation = {
-        score: result.feedback.score,
-        quality: result.feedback.quality,
-        issues: result.feedback.issues,
-        suggestions: result.feedback.suggestions,
-        shouldPivot: result.feedback.shouldPivot
+        coherenceScore: result.feedback.coherenceScore || 0,
+        contradictionScore: result.feedback.contradictionScore || 0,
+        informationGain: result.feedback.informationGain || 0,
+        goalAlignment: result.feedback.goalAlignment || 0,
+        confidenceGradient: result.feedback.confidenceGradient || 0,
+        redundancyScore: result.feedback.redundancyScore || 0,
+        overallScore: result.feedback.score || 0
       };
     }
 
@@ -168,10 +177,10 @@ class BranchingThoughtServer {
 
   async processThought(input: unknown): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
     try {
-      const inputData = input as any;
+      const inputData = input as ExtendedBranchingThoughtInput;
       
-      if (inputData.command) {
-        return this.handleCommand(inputData.command);
+      if ('command' in inputData && inputData.command) {
+        return this.handleCommand(inputData.command as CommandParams);
       }
 
       const thoughtInput = this.createThoughtInput(inputData);
@@ -202,8 +211,15 @@ class BranchingThoughtServer {
     }
   }
 
-  private async handleCommand(command: { type: string; branchId?: string; data?: any; goal?: string; query?: string }): Promise<{ content: Array<{ type: string; text: string }> }> {
-    const result = await this.commandHandler.handleCommand(command.type, command);
+  private async handleCommand(command: CommandParams): Promise<{ content: Array<{ type: string; text: string }> }> {
+    // Convert CommandParams to CommandData for the command handler
+    const commandData: CommandData = {
+      ...(command.branchId !== undefined && { branchId: command.branchId }),
+      ...(command.data !== undefined && { data: command.data }),
+      ...(command.goal !== undefined && { goal: command.goal }),
+      ...(command.query !== undefined && { query: command.query })
+    };
+    const result = await this.commandHandler.handleCommand(command.type, commandData);
     
     if (command.type === 'evaluate' && result.content[0]) {
       try {

@@ -9,6 +9,7 @@ import { GapPatternMatcher } from './analyzers/GapPatternMatcher.js';
 import { ClaimsAnalyzer } from './analyzers/ClaimsAnalyzer.js';
 import { GapQueryGenerator } from './analyzers/GapQueryGenerator.js';
 import { TopicExtractor } from './analyzers/TopicExtractor.js';
+import { GapMatch } from './types/interfaces.js';
 
 export interface KnowledgeGap {
   branchId: string;
@@ -71,7 +72,7 @@ export class KnowledgeGapDetector {
   /**
    * Create gap from pattern match
    */
-  private createGapFromMatch(match: any, thought: ThoughtData, branchId: string): KnowledgeGap {
+  private createGapFromMatch(match: GapMatch, thought: ThoughtData, branchId: string): KnowledgeGap {
     const isQuestion = match.matchedText.includes('?');
     
     return {
@@ -133,7 +134,7 @@ export class KnowledgeGapDetector {
   /**
    * Calculate confidence in gap detection
    */
-  private calculateConfidence(match: any, content: string): number {
+  private calculateConfidence(match: GapMatch, content: string): number {
     let confidence = 0.6; // Base confidence
 
     // Questions have high confidence

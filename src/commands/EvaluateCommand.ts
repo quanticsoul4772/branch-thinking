@@ -1,4 +1,5 @@
 import { Command, CommandData, CommandResult } from './Command.js';
+import { EvaluationInput } from '../types/interfaces.js';
 
 export class EvaluateCommand extends Command {
   async execute(data: CommandData): Promise<CommandResult> {
@@ -23,7 +24,7 @@ export class EvaluateCommand extends Command {
     }
   }
   
-  private interpretEvaluation(result: any): string {
+  private interpretEvaluation(result: EvaluationInput): string {
     const { overallScore, coherenceScore, contradictionScore, redundancyScore, 
       informationGain, goalAlignment } = result;
     

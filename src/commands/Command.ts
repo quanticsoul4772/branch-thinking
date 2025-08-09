@@ -6,7 +6,7 @@ export interface CommandResult {
 
 export interface CommandData {
   branchId?: string;
-  data?: any;
+  data?: unknown;
   goal?: string;
   query?: string;
   // Additional properties used by specific commands
@@ -16,6 +16,10 @@ export interface CommandData {
   toThoughtId?: string;
   branch1Id?: string;
   branch2Id?: string;
+  threshold?: number;
+  entities?: any[];
+  relations?: any[];
+  [key: string]: unknown; // Allow additional properties
 }
 
 export abstract class Command {
@@ -23,7 +27,7 @@ export abstract class Command {
   
   abstract execute(data: CommandData): Promise<CommandResult>;
   
-  protected createSuccessResponse(data: any): CommandResult {
+  protected createSuccessResponse(data: unknown): CommandResult {
     return {
       content: [{
         type: 'text',

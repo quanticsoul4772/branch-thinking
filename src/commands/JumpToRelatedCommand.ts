@@ -2,14 +2,15 @@ import { Command, CommandData, CommandResult } from './Command.js';
 
 export class JumpToRelatedCommand extends Command {
   async execute(data: CommandData): Promise<CommandResult> {
-    if (!data.data?.thoughtId) {
+    const params = data.data as { thoughtId?: string; limit?: number } | undefined;
+    if (!params?.thoughtId) {
       return this.createErrorResponse('thoughtId required in data for jumpToRelated command');
     }
     
     try {
       const result = await this.branchManager.jumpToRelated(
-        data.data.thoughtId,
-        data.data.limit || 5
+        params.thoughtId,
+        params.limit || 5
       );
       
       return this.createSuccessResponse(result);
