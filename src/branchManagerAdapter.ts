@@ -12,6 +12,42 @@ import { CounterfactualGenerator } from './counterfactualGenerator.js';
 import { KnowledgeGapDetector } from './knowledgeGapDetector.js';
 import { DialecticalSynthesizer } from './dialecticalSynthesizer.js';
 
+// Interfaces for return types
+export interface BranchHistory {
+  branchId: string;
+  state: string;
+  thoughtCount: number;
+  thoughts: Array<{
+    index: number;
+    id: string;
+    timestamp: string;
+    type: string;
+    content: string;
+    keyPoints: string[];
+    confidence: number;
+  }>;
+}
+
+export interface BranchStatus {
+  id?: string;
+  state?: string;
+  isActive?: boolean;
+  priority?: number;
+  confidence?: number;
+  totalThoughts?: number;
+  recentThoughts?: Array<{
+    content: string;
+    type: string;
+    timestamp: string;
+  }>;
+  error?: string;
+}
+
+export interface BranchHistoryData {
+  branch: ThoughtBranch;
+  thoughts: ThoughtData[];
+}
+
 // Helper classes
 import { EvaluationHelper } from './utils/EvaluationHelper.js';
 import { SerializationHelper } from './utils/SerializationHelper.js';
@@ -166,7 +202,7 @@ export class BranchManagerAdapter {
       return null;
     }
     
-    return await this.evaluator.evaluateIncremental(this.graph, branchId);
+    return this.evaluator.evaluateIncremental(this.graph, branchId);
   }
   
   /**
@@ -183,15 +219,15 @@ export class BranchManagerAdapter {
   /**
    * Get branch history
    */
-  getBranchHistory(branchId: string): any {
-    const { branch, thoughts } = this.branchOpsHelper.getBranchHistory(this.graph, branchId);
+  getBranchHistory(branchId: string): BranchHistory {
+    const { branch, thoughts }: BranchHistoryData = this.branchOpsHelper.getBranchHistory(this.graph, branchId);
     return this.formattingHelper.formatBranchHistory(branchId, branch, thoughts);
   }
   
   /**
    * Format branch status
    */
-  formatBranchStatus(branch: ThoughtBranch | null | undefined): any {
+  formatBranchStatus(branch: ThoughtBranch | null | undefined): BranchStatus {
     return this.formattingHelper.formatBranchStatus(branch, this.activeBranchId);
   }
   
