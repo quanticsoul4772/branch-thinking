@@ -1,3 +1,4 @@
+/* global process */
 #!/usr/bin/env node
 
 /**
